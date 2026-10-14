@@ -24,3 +24,4 @@ a=[23,45,67]
 b=a
 b.append(21)
 print(a)
+
