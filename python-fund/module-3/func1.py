@@ -14,3 +14,4 @@ def div(a,b):
     return print(int(a/b))
 div(10,4)
 
+
