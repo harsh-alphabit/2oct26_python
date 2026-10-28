@@ -35,7 +35,7 @@ because it hides bugs you didn't expect
 
 ALWAYS catch the SPECIFIC exception you expect
 
-# ex
+ex
 ```
 try:
     number = int("hello")
