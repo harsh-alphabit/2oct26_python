@@ -33,7 +33,10 @@ while True:
 		print(f"added {quantity} {item}(s): {item_total}")
 
 	except ValueError:
-		print("Please enter a valid number")
+			print("Please enter a valid number")
+	
+	except Exception as e:
+		print(e)
 
 print(f"\nYour total is: {total}")
 
