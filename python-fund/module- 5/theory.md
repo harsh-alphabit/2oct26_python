@@ -122,3 +122,10 @@ finally:
 #   finally: This ALWAYS runs — cleanup happens here.
 
 ```
+
+## WHEN TO USE WHAT?
+
+else    → Put code that should run ONLY on success(keeps try block small and focused)
+
+finally → Put CLEANUP code here (closing files, closing database connections, 
+          releasing resources) It runs even if you use "return" inside try
