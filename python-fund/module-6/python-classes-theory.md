@@ -1,1131 +1,610 @@
-# 🐍 Python Classes — Complete Theory Guide
+# Python Classes and Objects — Beginner Theory
 
----
+> **For Module 6:** This lesson introduces classes and objects before we move on to file handling. Read the ideas, type the examples yourself, and change the values to see what happens.
 
-## 📌 Table of Contents
+## Learning goals
 
-1. [Why Do We Need Classes?](#1--why-do-we-need-classes)
-2. [What Problem Does It Solve?](#2--what-problem-does-it-solve)
-3. [Why Not Just Use List / Dict?](#3--why-not-just-use-list--dict)
-4. [What is a Class?](#4--what-is-a-class)
-5. [What is an Object (Instance)?](#5--what-is-an-object-instance)
-6. [`__init__()` — The Constructor](#6--__init__--the-constructor)
-7. [`self` — The Current Object](#7--self--the-current-object)
-8. [Instance Variables](#8--instance-variables)
-9. [Methods (Functions Inside a Class)](#9--methods-functions-inside-a-class)
-10. [Class Variables vs Instance Variables](#10--class-variables-vs-instance-variables)
-11. [Encapsulation (Data Hiding)](#11--encapsulation-data-hiding)
-12. [Inheritance (Parent → Child)](#12--inheritance-parent--child)
-13. [`super()` — Call Parent's Method](#13--super--call-parents-method)
-14. [Method Overriding](#14--method-overriding)
-15. [Polymorphism](#15--polymorphism)
-16. [`__str__` and `__repr__`](#16--__str__-and-__repr__)
-17. [`@staticmethod` and `@classmethod`](#17--staticmethod-and-classmethod)
-18. [Private Variables (`_` and `__`)](#18--private-variables-_-and-__)
-19. [`@property` Decorator](#19--property-decorator)
-20. [Multiple Inheritance](#20--multiple-inheritance)
-21. [Abstract Class](#21--abstract-class)
-22. [Quick Cheat Sheet](#22--quick-cheat-sheet)
+By the end, you should be able to:
 
----
+- explain why a class is useful and what problem it solves;
+- distinguish a class, an object, an attribute, and a method;
+- create objects using `__init__()`;
+- explain what `self` refers to and why it appears in methods;
+- understand, at a beginner level, how variables refer to objects in memory;
+- decide when a list, dictionary, or class is a sensible choice.
 
-## 1. 🤔 Why Do We Need Classes?
+## 1. Start with a familiar problem
 
-Imagine you're building a **Student Management System**. Each student has a name, age, marks, and you need functions like `get_grade()`, `is_pass()`, etc.
+Suppose a program must keep information about many students. Each student has a name, age, and marks. We also want to calculate that student's result.
 
-**Without classes**, you'd write something like this:
+With separate variables, one student might look like this:
 
 ```python
-# Student 1
 student1_name = "Ravi"
-student1_age = 20
-student1_marks = 85
+student1_age = 19
+student1_marks = 82
 
-# Student 2
-student2_name = "Priya"
-student2_age = 21
-student2_marks = 72
-
-def get_grade(marks):
-    if marks >= 90:
-        return "A"
-    elif marks >= 75:
-        return "B"
-    else:
-        return "C"
-
-print(get_grade(student1_marks))  # B
+student2_name = "Asha"
+student2_age = 20
+student2_marks = 91
 ```
 
-### ❌ Problems with this approach:
+This is manageable for two students. With 100 students, there could be 300 separate variables. It is also easy to accidentally combine Ravi's name with Asha's marks.
 
-| Problem | Explanation |
-|---------|-------------|
-| **Too many variables** | For 100 students, you'd create 300 variables! |
-| **No connection** | `student1_name` and `get_grade()` are not linked — they're floating around separately |
-| **Easy to mess up** | You might accidentally pass `student2_marks` when you meant `student1_marks` |
-| **Hard to maintain** | Adding a new field (like phone number) means changing code everywhere |
-
-> **Classes solve all of these problems by bundling data + functions together into one unit.**
-
----
-
-## 2. 🧩 What Problem Does It Solve?
-
-Classes solve the problem of **organizing related data and behavior together**.
-
-Think of it like this:
-
-| Real World | Programming |
-|------------|------------|
-| A **car** has color, speed, fuel — and it can **start**, **stop**, **accelerate** | A **class** has variables (data) — and it has **methods** (functions) |
-| Each **specific car** (your Honda, my Toyota) is different | Each **object** is a different instance of the same class |
-
-### The core idea:
-
-```
-Class = Blueprint (template)
-Object = Actual thing made from that blueprint
-```
-
-A class is like a **cookie cutter** 🍪 — you use the same cutter to make many cookies, but each cookie can have different toppings (data).
-
----
-
-## 3. 🆚 Why Not Just Use List / Dict?
-
-Good question! Let's try to manage students with a dict:
-
-### Attempt with Dict:
+We could put each student's information in a dictionary:
 
 ```python
-student1 = {
-    "name": "Ravi",
-    "age": 20,
-    "marks": 85
-}
+student1 = {"name": "Ravi", "age": 19, "marks": 82}
+student2 = {"name": "Asha", "age": 20, "marks": 91}
 
-student2 = {
-    "name": "Priya",
-    "age": 21,
-    "marks": 72
-}
-
-def get_grade(student):
-    if student["marks"] >= 90:
-        return "A"
-    elif student["marks"] >= 75:
-        return "B"
-    return "C"
-
-print(get_grade(student1))  # B
+print(student1["name"])
 ```
 
-### This works! But here are the problems:
+This is already much better organized. But if many functions work with students, those functions and the student data still live separately. We must also remember the exact dictionary keys, such as `"marks"`.
 
-| Problem | Dict | Class |
-|---------|------|-------|
-| **Typos** | `student["nme"]` → `KeyError` at runtime 💥 | `student.nme` → your editor warns you immediately |
-| **No rules** | Anyone can do `student["marks"] = -500` (invalid!) | Class can **validate** data inside `__init__` |
-| **Functions are separate** | `get_grade(student1)` — function is NOT part of the student | `student1.get_grade()` — function BELONGS to the student |
-| **No structure enforcement** | One dict might have `"marks"`, another might have `"score"` — no consistency | Every object follows the same blueprint |
-| **No inheritance** | Can't create a `ScienceStudent` that extends a `Student` | Easy! `class ScienceStudent(Student)` |
+A **class** gives us a way to describe a student once: what information every student should have, and what actions a student can perform. Then we make one **object** for each student.
 
-### Same thing with a Class:
+## 2. What is a class?
+
+A **class** is a description for creating objects of a particular kind. It groups related data and the functions that work with that data.
+
+Think of a class as a form or plan:
+
+- A blank student registration form says which details to collect.
+- Each completed form contains the details of one particular student.
+- The form design is like the class; each completed form is like an object.
+
+Another familiar comparison is a recipe and the dish made from it. The recipe describes how to make something; it is not itself the dish.
+
+In programming, a class can describe both:
+
+- **Attributes:** information an object stores, such as a student's name or marks.
+- **Methods:** actions or behavior, written as functions inside the class, such as showing the student's result.
+
+## 3. What is an object?
+
+An **object** is one particular value created using a class. It is also called an **instance** of that class. The act of making an object is called **creating an instance** or **instantiation**.
+
+```python
+class Student:
+    pass
+
+
+student_a = Student()
+student_b = Student()
+
+print(type(student_a))
+print(student_a is student_b)  # False: these are two different objects
+```
+
+`Student` is the class. `student_a` and `student_b` refer to two different objects made from it. `pass` means “there is no class code here yet”; it lets us introduce the class syntax before adding details.
+
+By convention, Python class names use **CapitalizedWords**, such as `Student`, `BankAccount`, and `SchoolBus`. Variable and method names usually use lowercase words with underscores, such as `student_name` and `show_result`.
+
+## 4. Our first useful class
 
 ```python
 class Student:
     def __init__(self, name, age, marks):
         self.name = name
         self.age = age
-        if marks < 0 or marks > 100:
-            raise ValueError("Marks must be between 0 and 100")
         self.marks = marks
 
-    def get_grade(self):
-        if self.marks >= 90:
-            return "A"
-        elif self.marks >= 75:
-            return "B"
-        return "C"
 
-s1 = Student("Ravi", 20, 85)
-print(s1.get_grade())  # B
+student_a = Student("Ravi", 19, 82)
+student_b = Student("Asha", 20, 91)
 
-# s2 = Student("Priya", 21, -50)  # ❌ ValueError! Class protects the data
+print(student_a.name)   # Ravi
+print(student_b.marks)  # 91
 ```
 
-> **Summary**: Use **dict** for simple key-value data. Use **class** when your data has **behavior** (functions) and needs **rules/structure**.
+The class describes the information students have. Each call to `Student(...)` makes a new student object with its own values.
 
----
+## 5. `__init__()` in detail
 
-## 4. 📦 What is a Class?
-
-A class is a **blueprint** or **template** for creating objects.
+`__init__` is a special method Python calls to **initialize** a new object's starting information. It is called automatically when we create an object by calling the class.
 
 ```python
-class Car:
-    pass  # empty class — but it's valid!
+student_a = Student("Ravi", 19, 82)
 ```
 
-- `class` → keyword to define a class
-- `Car` → name of the class (always **CamelCase** by convention)
-- `pass` → placeholder (means "nothing here yet")
+For now, follow this simplified sequence:
 
-Think of it like an **architect's plan** — it describes what a house will look like, but it's not a house itself.
+1. Python creates a new `Student` object.
+2. Python calls `Student.__init__` for that object.
+3. The new object is supplied as the first argument (`self`).
+4. The other values, `"Ravi"`, `19`, and `82`, are supplied as `name`, `age`, and `marks`.
+5. The assignments store those values as attributes on that particular object.
+6. The completed object is returned by the class call and `student_a` refers to it.
 
----
+In everyday beginner explanations, people sometimes call `__init__` a constructor. More precisely, `__new__` creates the object and `__init__` initializes it. For this course, remember: **`__init__` runs automatically when an object is made and sets up its initial data.**
 
-## 5. 🏗️ What is an Object (Instance)?
-
-An **object** is a **real thing** created from the class blueprint.
+Break down this line:
 
 ```python
-class Car:
-    pass
-
-car1 = Car()  # object 1
-car2 = Car()  # object 2
-
-print(type(car1))  # <class '__main__.Car'>
-print(car1 == car2)  # False — they are two DIFFERENT objects
+self.name = name
 ```
 
-| Term | Meaning |
-|------|---------|
-| **Class** | The blueprint / template |
-| **Object** | A real thing created from the class |
-| **Instance** | Same as object (used interchangeably) |
-| **Instantiation** | The act of creating an object from a class |
+- `name` on the right is the value received by the method, such as `"Ravi"`.
+- `self.name` on the left means the `name` attribute belonging to this particular object.
+- The assignment stores the received value on the object.
 
-```
-Car  → class (blueprint)
-car1 = Car()  → object / instance (actual car)
-car2 = Car()  → another object / instance (another car)
-```
+The two names do not have to match. For example, `self.name = student_name` would also work if the parameter were named `student_name`.
 
----
+### What `__init__` does not do
 
-## 6. 🔧 `__init__()` — The Constructor
+An `__init__` method should not return the object. Python handles the class call and object creation. Normally, `__init__` has no `return` statement; returning a non-`None` value from it causes an error.
 
-`__init__` is a **special method** that runs **automatically** when you create an object. It **initializes** (sets up) the object's data.
+### Parameters and defaults
+
+An object can receive different starting values. Optional parameters can have defaults:
 
 ```python
 class Student:
-    def __init__(self, name, age):
-        self.name = name  # store name inside the object
-        self.age = age    # store age inside the object
+    def __init__(self, name, age, marks=0):
+        self.name = name
+        self.age = age
+        self.marks = marks
 
-s1 = Student("Ravi", 20)  # __init__ runs automatically here
-print(s1.name)  # Ravi
-print(s1.age)   # 20
+
+new_student = Student("Mina", 18)
+print(new_student.marks)  # 0
 ```
 
-### Breaking it down:
+Here, `marks` is `0` if the caller does not provide it. Required parameters must be provided; otherwise Python reports a `TypeError`.
 
-```
-Student("Ravi", 20)
-   │
-   ▼
-Python does two things:
-   1. Creates a new empty object
-   2. Calls __init__(self, "Ravi", 20)
-      │
-      ▼
-   self.name = "Ravi"   →  saves "Ravi" inside this object
-   self.age  = 20       →  saves 20 inside this object
-```
+## 6. `self` in detail
 
-### Key points:
-
-- `__init__` is called **constructor** (it constructs/builds the object)
-- The double underscores `__` are called **dunder** (double underscore)
-- It does NOT return anything (no `return` statement)
-- It runs **every time** you create a new object
-
-### Common mistake:
-
-```python
-class Student:
-    def __init__(self, name):
-        name = name  # ❌ WRONG! This is just a local variable, NOT saved in object
-
-    # Correct way:
-    def __init__(self, name):
-        self.name = name  # ✅ self.name saves it INSIDE the object
-```
-
----
-
-## 7. 🪞 `self` — The Current Object
-
-`self` is a **reference to the current object**. It's how the object talks about **itself**.
+`self` means **the particular object that is currently using the method**. It is how a method can read or change that object's attributes.
 
 ```python
 class Dog:
     def __init__(self, name):
-        self.name = name  # "Hey object, YOUR name is ___"
+        self.name = name
 
     def bark(self):
-        print(f"{self.name} says: Woof!")  # "Hey object, what's YOUR name?"
+        print(f"{self.name} says woof!")
 
-dog1 = Dog("Tommy")
-dog2 = Dog("Bruno")
 
-dog1.bark()  # Tommy says: Woof!
-dog2.bark()  # Bruno says: Woof!
+dog_a = Dog("Milo")
+dog_b = Dog("Coco")
+
+dog_a.bark()  # Milo says woof!
+dog_b.bark()  # Coco says woof!
 ```
 
-### How `self` works behind the scenes:
+When `dog_a.bark()` runs, `self` refers to `dog_a`. When `dog_b.bark()` runs, `self` refers to `dog_b`. The same method works with either object because `self` identifies the one currently calling it.
+
+You can picture the call this way:
 
 ```python
-dog1.bark()
-# Python secretly converts this to:
-Dog.bark(dog1)
-# So self = dog1
-
-dog2.bark()
-# Python secretly converts this to:
-Dog.bark(dog2)
-# So self = dog2
+dog_a.bark()
 ```
 
-### Key rules about `self`:
+is roughly equivalent to:
 
-| Rule | Explanation |
-|------|-------------|
-| `self` must be the **first parameter** in every method | Python passes the object automatically |
-| You **don't pass** `self` when calling | `dog1.bark()` NOT `dog1.bark(dog1)` |
-| `self` is not a keyword | You could name it `this` or `abc`, but **always use `self`** (convention) |
-| Use `self.___` to access/set object data | Without `self`, it's just a local variable |
-
-### Visualizing `self`:
-
-```
-dog1 (object in memory)          dog2 (object in memory)
-┌──────────────────┐             ┌──────────────────┐
-│ name = "Tommy"   │             │ name = "Bruno"   │
-└──────────────────┘             └──────────────────┘
-       ▲                                ▲
-       │                                │
-  self refers                      self refers
-  to dog1 when                     to dog2 when
-  dog1.bark()                      dog2.bark()
-  is called                        is called
+```python
+Dog.bark(dog_a)
 ```
 
----
+Python supplies the object for `self` when we use the usual `dog_a.bark()` form. We do not write `dog_a.bark(dog_a)`.
 
-## 8. 📊 Instance Variables
+### Rules to remember about `self`
 
-Instance variables are **data that belongs to a specific object**. Each object has its own copy.
+1. Write `self` as the first parameter of a regular instance method, including `__init__`.
+2. Do not pass `self` yourself when calling the method through an object.
+3. Use `self.attribute` to store or access data that belongs to the object.
+4. `self` is a naming convention, not a Python keyword. The code could technically use another name, but Python programmers use `self` so the code is easy to recognize.
+
+### A common `self` mistake
+
+```python
+class Student:
+    def __init__(self, name):
+        name = name  # Incorrect: this only assigns a local variable to itself
+```
+
+That code does not save the name on the object. Use an attribute on `self`:
+
+```python
+class Student:
+    def __init__(self, name):
+        self.name = name  # Correct: save it on this object
+```
+
+## 7. Attributes and methods
+
+An **attribute** is a value associated with an object. We access it with a dot: `student_a.name`.
+
+A **method** is a function defined inside a class. A regular instance method receives `self`, so it can use the data belonging to the object.
+
+```python
+class Student:
+    def __init__(self, name, marks):
+        self.name = name
+        self.marks = marks
+
+    def show_result(self):
+        if self.marks >= 40:
+            return f"{self.name} passed"
+        return f"{self.name} needs to try again"
+
+
+student = Student("Ravi", 82)
+print(student.show_result())  # Ravi passed
+```
+
+`name` and `marks` are attributes. `show_result` is a method. Notice the method reads `self.marks` and `self.name`, so it works with the object that called it.
+
+A function outside a class can also work with student data. A method is useful when the behavior is naturally part of the object and uses that object's information. Classes do not make every function better; they give us another way to organize code.
+
+## 8. Each object keeps its own data
+
+Attributes created with `self` belong to a particular object. They are often called **instance attributes**.
 
 ```python
 class BankAccount:
     def __init__(self, owner, balance):
-        self.owner = owner      # instance variable
-        self.balance = balance  # instance variable
-
-acc1 = BankAccount("Ravi", 5000)
-acc2 = BankAccount("Priya", 8000)
-
-print(acc1.balance)  # 5000
-print(acc2.balance)  # 8000
-
-acc1.balance = 6000  # only acc1 changes
-print(acc1.balance)  # 6000
-print(acc2.balance)  # 8000 — acc2 is NOT affected
-```
-
-### Key point:
-> Each object has its **own separate copy** of instance variables. Changing one object doesn't affect the other.
-
----
-
-## 9. ⚙️ Methods (Functions Inside a Class)
-
-A **method** is simply a **function defined inside a class**. It describes what the object can **do**.
-
-```python
-class Calculator:
-    def __init__(self, num):
-        self.num = num
-
-    def square(self):
-        return self.num ** 2
-
-    def cube(self):
-        return self.num ** 3
-
-    def is_even(self):
-        return self.num % 2 == 0
-
-c = Calculator(4)
-print(c.square())   # 16
-print(c.cube())     # 64
-print(c.is_even())  # True
-```
-
-### Methods with parameters:
-
-```python
-class Calculator:
-    def __init__(self, num):
-        self.num = num
-
-    def add(self, other):
-        return self.num + other
-
-    def multiply(self, other):
-        return self.num * other
-
-c = Calculator(10)
-print(c.add(5))       # 15
-print(c.multiply(3))  # 30
-```
-
-### Methods that modify the object:
-
-```python
-class Counter:
-    def __init__(self):
-        self.count = 0
-
-    def increment(self):
-        self.count += 1
-
-    def decrement(self):
-        self.count -= 1
-
-    def reset(self):
-        self.count = 0
-
-c = Counter()
-c.increment()
-c.increment()
-c.increment()
-print(c.count)  # 3
-
-c.decrement()
-print(c.count)  # 2
-
-c.reset()
-print(c.count)  # 0
-```
-
----
-
-## 10. 🏷️ Class Variables vs Instance Variables
-
-| Feature | Class Variable | Instance Variable |
-|---------|---------------|-------------------|
-| **Where defined** | Inside class, outside any method | Inside `__init__` with `self.` |
-| **Shared?** | Shared by ALL objects | Each object has its OWN copy |
-| **Accessed via** | `ClassName.var` or `self.var` | `self.var` only |
-| **Use case** | Data common to all objects | Data unique to each object |
-
-```python
-class Employee:
-    # Class variable — shared by ALL employees
-    company = "TCS"
-    employee_count = 0
-
-    def __init__(self, name, salary):
-        # Instance variables — unique to EACH employee
-        self.name = name
-        self.salary = salary
-        Employee.employee_count += 1  # increment shared counter
-
-e1 = Employee("Ravi", 50000)
-e2 = Employee("Priya", 60000)
-e3 = Employee("Amit", 55000)
-
-print(e1.company)              # TCS (accessing class var through object)
-print(Employee.company)        # TCS (accessing class var through class)
-print(Employee.employee_count) # 3 (shared — counts ALL employees)
-
-print(e1.name)  # Ravi (instance var — unique to e1)
-print(e2.name)  # Priya (instance var — unique to e2)
-```
-
-### ⚠️ Tricky behavior — modifying class variable through object:
-
-```python
-class Student:
-    school = "ABC School"  # class variable
-
-s1 = Student()
-s2 = Student()
-
-# This does NOT modify the class variable!
-# It creates a NEW instance variable on s1
-s1.school = "XYZ School"
-
-print(s1.school)       # XYZ School (s1's own instance variable)
-print(s2.school)       # ABC School (still using class variable)
-print(Student.school)  # ABC School (class variable unchanged)
-
-# To actually change the class variable:
-Student.school = "New School"
-print(s2.school)  # New School (now s2 sees the change)
-```
-
----
-
-## 11. 🔒 Encapsulation (Data Hiding)
-
-Encapsulation means **hiding the internal data** of an object and only allowing access through methods. This **protects** the data from being misused.
-
-### The problem without encapsulation:
-
-```python
-class BankAccount:
-    def __init__(self, balance):
+        self.owner = owner
         self.balance = balance
 
-acc = BankAccount(5000)
-acc.balance = -10000  # 😱 Anyone can set a negative balance!
-print(acc.balance)    # -10000 — this should NOT be allowed
+
+account_a = BankAccount("Ravi", 5000)
+account_b = BankAccount("Asha", 8000)
+
+account_a.balance = 6000
+
+print(account_a.balance)  # 6000
+print(account_b.balance)  # 8000: account_b was not changed
 ```
 
-### The solution with encapsulation:
+Both objects were made from `BankAccount`, but each has its own `owner` and `balance`. Changing one object's attribute does not automatically change the other object's attribute.
+
+## 9. Where do objects get stored?
+
+When Python creates an object, the object exists in the program's memory (often informally called RAM while the program is running). A variable such as `account_a` is a **name that refers to the object**; it is helpful to imagine it as a label or reference pointing to the object.
+
+```python
+account_a = BankAccount("Ravi", 5000)
+account_b = account_a
+
+account_b.balance = 6500
+print(account_a.balance)  # 6500
+```
+
+In this example, Python did **not** create a second account. Both names refer to the same object. Updating that object's balance can therefore be seen through either name.
+
+To make another account object, call the class again:
+
+```python
+account_a = BankAccount("Ravi", 5000)
+account_b = BankAccount("Asha", 8000)
+```
+
+Now the names refer to separate objects.
+
+When no part of a running program can reach an object anymore, Python can reclaim its memory. Beginners do not normally need to manually free ordinary Python objects. Also, an object in memory is not automatically saved to a file: it normally exists only while the program is running unless we deliberately save its data.
+
+## 10. What problem do classes solve?
+
+Classes help when a program has many related things that each have their own data and behavior.
+
+Without a class, you might pass several separate values to functions:
+
+```python
+def show_student_result(name, marks):
+    if marks >= 40:
+        print(f"{name} passed")
+    else:
+        print(f"{name} needs to try again")
+
+
+show_student_result("Ravi", 82)
+```
+
+This is perfectly reasonable for a small task. As the program grows, you may pass the same student's name, marks, age, and other details to many functions. It becomes easy to mix up which values belong together.
+
+With a class, the student data travels together and related behavior can use it:
+
+```python
+student = Student("Ravi", 82)
+print(student.show_result())
+```
+
+Classes can help with:
+
+- **Organization:** related attributes and methods are kept together.
+- **Consistency:** every object is created according to the same class design.
+- **Multiple records:** create many objects without inventing new variable names for every field.
+- **Clearer operations:** `account.deposit(500)` says what the account does.
+- **Validation:** methods can check whether an operation or value makes sense.
+
+Classes do not automatically make a program shorter, faster, safer, or more correct. The benefit is clearer organization when the problem has meaningful objects with data and behavior.
+
+## 11. Why use a class if we already have lists and dictionaries?
+
+Lists and dictionaries are useful. A class is not a replacement for them; it serves a different purpose. Many programs use all three together.
+
+### Use a list for a group of values
+
+```python
+marks = [82, 91, 76]
+print(marks[0])  # 82
+```
+
+A list is a good choice when you want an ordered group of items, such as marks, names, or a queue of tasks.
+
+### Use a dictionary for labeled values
+
+```python
+student_data = {"name": "Ravi", "age": 19, "marks": 82}
+print(student_data["name"])  # Ravi
+```
+
+A dictionary is a good choice for a simple record of key-value pairs, especially when the fields may vary or when you are working with data from JSON or an API.
+
+### Use a class when the record also has behavior or rules
+
+```python
+class Student:
+    def __init__(self, name, age, marks):
+        self.name = name
+        self.age = age
+        self.marks = marks
+
+    def has_passed(self):
+        return self.marks >= 40
+
+
+student = Student("Ravi", 19, 82)
+print(student.name)          # Ravi
+print(student.has_passed())  # True
+```
+
+| Need | A natural starting point |
+|---|---|
+| Keep an ordered collection of items | `list` |
+| Keep a few labeled values together | `dict` |
+| Create many similar entities with their own data and related behavior | `class` |
+
+The class version does not mean a dictionary is bad. For a small, temporary record, a dictionary can be simpler. A class becomes helpful when the same kind of entity appears repeatedly and the program needs consistent structure, behavior, or rules.
+
+### A class and a list can work together
+
+```python
+class Student:
+    def __init__(self, name, marks):
+        self.name = name
+        self.marks = marks
+
+
+students = [
+    Student("Ravi", 82),
+    Student("Asha", 91),
+    Student("Mina", 76),
+]
+
+for student in students:
+    print(student.name, student.marks)
+```
+
+Here, each student is an object and the list holds the collection of student objects. This is a common pattern.
+
+## 12. Validation: make an object start in a sensible state
+
+A class can check data as it is initialized. This example rejects marks outside the range 0–100:
+
+```python
+class Student:
+    def __init__(self, name, marks):
+        if not 0 <= marks <= 100:
+            raise ValueError("Marks must be from 0 to 100")
+
+        self.name = name
+        self.marks = marks
+
+
+student = Student("Ravi", 82)  # Valid
+# student = Student("Asha", 120)  # Raises ValueError
+```
+
+`raise ValueError(...)` tells the caller that the supplied value is not acceptable. We will study exceptions in more detail in the exception-handling lesson. A check in `__init__` validates the starting value; if attributes are later changed directly, extra design is needed to validate those changes too.
+
+## 13. Real-world example: a bank account
+
+A bank account is a useful example because it has both **data** (owner and balance) and **behavior** (deposit and withdraw). The same ideas apply to a shopping cart, library book, game character, or employee record.
 
 ```python
 class BankAccount:
-    def __init__(self, balance):
-        self.__balance = balance  # __ makes it "private"
+    def __init__(self, owner, starting_balance=0):
+        if starting_balance < 0:
+            raise ValueError("Starting balance cannot be negative")
+
+        self.owner = owner
+        self.balance = starting_balance
 
     def deposit(self, amount):
-        if amount > 0:
-            self.__balance += amount
-            print(f"Deposited {amount}. New balance: {self.__balance}")
-        else:
-            print("Deposit amount must be positive!")
+        if amount <= 0:
+            print("Deposit amount must be greater than zero")
+            return
+
+        self.balance += amount
+        print(f"Deposited {amount}. Balance: {self.balance}")
 
     def withdraw(self, amount):
-        if amount > self.__balance:
-            print("Insufficient balance!")
-        elif amount <= 0:
-            print("Withdrawal amount must be positive!")
+        if amount <= 0:
+            print("Withdrawal amount must be greater than zero")
+        elif amount > self.balance:
+            print("Not enough money in the account")
         else:
-            self.__balance -= amount
-            print(f"Withdrew {amount}. New balance: {self.__balance}")
+            self.balance -= amount
+            print(f"Withdrew {amount}. Balance: {self.balance}")
 
-    def get_balance(self):
-        return self.__balance
+    def show_balance(self):
+        print(f"{self.owner}'s balance is {self.balance}")
 
-acc = BankAccount(5000)
-acc.deposit(2000)      # Deposited 2000. New balance: 7000
-acc.withdraw(1000)     # Withdrew 1000. New balance: 6000
-print(acc.get_balance())  # 6000
 
-# Trying to access directly:
-# print(acc.__balance)  # ❌ AttributeError!
+ravi_account = BankAccount("Ravi", 1000)
+ravi_account.deposit(500)
+ravi_account.withdraw(200)
+ravi_account.show_balance()
+
+asha_account = BankAccount("Asha", 3000)
+asha_account.show_balance()
 ```
 
-> **Think of it like an ATM**: You can deposit and withdraw through the machine (methods), but you can't directly open the vault and take money (access private data).
+Expected output:
 
----
-
-## 12. 👨‍👦 Inheritance (Parent → Child)
-
-Inheritance lets you **create a new class based on an existing class**. The child class gets everything from the parent class and can add its own stuff.
-
-### Why inheritance?
-
+```text
+Deposited 500. Balance: 1500
+Withdrew 200. Balance: 1300
+Ravi's balance is 1300
+Asha's balance is 3000
 ```
-Without inheritance:
-  - Student class: name, age, get_info()
-  - Teacher class: name, age, get_info(), subject
-  
-  → name, age, get_info() are REPEATED in both! 😫
 
-With inheritance:
-  - Person class: name, age, get_info()
-  - Student(Person): inherits everything + adds student-specific stuff
-  - Teacher(Person): inherits everything + adds teacher-specific stuff
-  
-  → No repetition! 🎉
-```
+What does the class represent here?
+
+- `BankAccount` is the design for accounts.
+- `ravi_account` and `asha_account` are separate account objects.
+- `owner` and `balance` are each account's data.
+- `deposit`, `withdraw`, and `show_balance` are actions an account can perform.
+- `self` makes each action work on the account that called it.
+
+In a real banking system, important financial rules and stored balances need much stronger safeguards. This classroom example teaches the organization idea; it is not banking software.
+
+## 14. Another real-world example: a library book
 
 ```python
-# Parent class (also called Base class / Super class)
-class Animal:
-    def __init__(self, name, sound):
-        self.name = name
-        self.sound = sound
+class LibraryBook:
+    def __init__(self, title, author):
+        self.title = title
+        self.author = author
+        self.is_available = True
 
-    def speak(self):
-        print(f"{self.name} says {self.sound}!")
+    def borrow(self):
+        if self.is_available:
+            self.is_available = False
+            print(f"You borrowed: {self.title}")
+        else:
+            print(f"{self.title} is already borrowed")
 
-    def info(self):
-        print(f"I am {self.name}")
+    def return_book(self):
+        self.is_available = True
+        print(f"Returned: {self.title}")
 
-# Child class (also called Derived class / Sub class)
-class Dog(Animal):  # Dog INHERITS from Animal
-    def fetch(self):  # new method only for Dog
-        print(f"{self.name} fetches the ball!")
 
-class Cat(Animal):  # Cat INHERITS from Animal
-    def purr(self):  # new method only for Cat
-        print(f"{self.name} purrs...")
-
-# Using them:
-dog = Dog("Tommy", "Woof")
-dog.speak()   # Tommy says Woof!    ← inherited from Animal
-dog.info()    # I am Tommy          ← inherited from Animal
-dog.fetch()   # Tommy fetches the ball!  ← Dog's own method
-
-cat = Cat("Kitty", "Meow")
-cat.speak()   # Kitty says Meow!    ← inherited from Animal
-cat.purr()    # Kitty purrs...      ← Cat's own method
-
-# cat.fetch()  # ❌ Error! Cat doesn't have fetch()
+book = LibraryBook("The Blue Umbrella", "Ruskin Bond")
+book.borrow()
+book.borrow()
+book.return_book()
 ```
 
-### Terminology:
+The `is_available` value changes on this book object. A different `LibraryBook` object has its own availability value.
 
-| Term | Meaning |
-|------|---------|
-| **Parent / Base / Super class** | The class being inherited FROM |
-| **Child / Derived / Sub class** | The class that INHERITS |
-| `class Dog(Animal)` | Dog inherits from Animal |
-| `isinstance(dog, Animal)` | Returns `True` — Dog IS an Animal |
+## 15. A method can return a value
 
----
-
-## 13. 🔗 `super()` — Call Parent's Method
-
-`super()` lets the **child class call the parent's method**. Most commonly used in `__init__` to initialize the parent's data.
+Methods can print a message, return a value, or do both. Returning a value usually makes a method easier to reuse:
 
 ```python
-class Person:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
-
-    def info(self):
-        print(f"Name: {self.name}, Age: {self.age}")
-
-class Student(Person):
-    def __init__(self, name, age, grade):
-        super().__init__(name, age)  # call Person's __init__
-        self.grade = grade  # add Student-specific data
-
-    def info(self):
-        super().info()  # call Person's info() first
-        print(f"Grade: {self.grade}")  # then add more info
-
-s = Student("Ravi", 20, "A")
-s.info()
-# Output:
-# Name: Ravi, Age: 20
-# Grade: A
-```
-
-### What happens WITHOUT `super()`?
-
-```python
-class Student(Person):
-    def __init__(self, name, age, grade):
-        # ❌ Forgot to call super().__init__()
-        self.grade = grade
-
-s = Student("Ravi", 20, "A")
-print(s.grade)  # A ✅
-print(s.name)   # ❌ AttributeError! name was never set
-```
-
-> **Rule**: If your child class has `__init__`, always call `super().__init__()` to properly initialize the parent's data.
-
----
-
-## 14. 🔄 Method Overriding
-
-When a child class **defines a method with the same name** as the parent, the child's version **replaces** (overrides) the parent's version.
-
-```python
-class Shape:
-    def area(self):
-        return 0
-
-    def description(self):
-        return "I am a shape"
-
-class Circle(Shape):
-    def __init__(self, radius):
-        self.radius = radius
-
-    def area(self):  # OVERRIDES Shape's area()
-        return 3.14 * self.radius ** 2
-
-    def description(self):  # OVERRIDES Shape's description()
-        return f"I am a circle with radius {self.radius}"
-
-class Rectangle(Shape):
-    def __init__(self, width, height):
+class Rectangle:
+    def __init__(self, length, width):
+        self.length = length
         self.width = width
-        self.height = height
 
-    def area(self):  # OVERRIDES Shape's area()
-        return self.width * self.height
+    def area(self):
+        return self.length * self.width
 
-    def description(self):
-        return f"I am a rectangle ({self.width}x{self.height})"
 
-c = Circle(5)
-r = Rectangle(4, 6)
-
-print(c.area())         # 78.5
-print(c.description())  # I am a circle with radius 5
-print(r.area())         # 24
-print(r.description())  # I am a rectangle (4x6)
+room = Rectangle(5, 4)
+room_area = room.area()
+print(room_area)  # 20
 ```
 
-> The child class **replaces** the parent's method with its own version. The parent's method still exists — you can access it with `super()`.
+`return` sends the calculated area back to the caller. We can print it, store it, or use it in another calculation.
 
----
+## 16. Object state: what does “state” mean?
 
-## 15. 🎭 Polymorphism
-
-**Polymorphism** = "many forms". The **same method name** behaves **differently** for different objects.
+An object's **state** is the current set of values in its attributes. A bank account with balance `1000` has a different state after a successful withdrawal changes the balance to `800`.
 
 ```python
-class Dog:
-    def speak(self):
-        return "Woof!"
-
-class Cat:
-    def speak(self):
-        return "Meow!"
-
-class Duck:
-    def speak(self):
-        return "Quack!"
-
-# Polymorphism in action — same function works with different types!
-def animal_sound(animal):
-    print(animal.speak())  # calls speak() — but which one? Depends on the object!
-
-animals = [Dog(), Cat(), Duck()]
-
-for animal in animals:
-    animal_sound(animal)
-
-# Output:
-# Woof!
-# Meow!
-# Quack!
+account = BankAccount("Ravi", 1000)  # Starting state: balance is 1000
+account.withdraw(200)                # The method changes the state
+account.show_balance()                # Current state: balance is 800
 ```
 
-### Why is this powerful?
-The `animal_sound()` function **doesn't care** what type of animal it receives. It just calls `.speak()` and trusts that the object knows what to do. This is called **Duck Typing** in Python:
+Methods are often useful because they let us describe an operation on an object and update its state in one clear place.
 
-> *"If it walks like a duck and quacks like a duck, it's a duck."*
-> — Python doesn't check the type, it just checks if the method exists.
+## 17. Common beginner errors
 
----
-
-## 16. 📝 `__str__` and `__repr__`
-
-These special methods control **how your object looks when printed**.
-
-### Without `__str__`:
+### Forgetting `self` in a method definition
 
 ```python
 class Student:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
-
-s = Student("Ravi", 20)
-print(s)  # <__main__.Student object at 0x7f2b3c>  😕 Useless!
+    def show_name():
+        print("Ravi")
 ```
 
-### With `__str__`:
+Calling `student.show_name()` passes the student object automatically. If the method has no `self` parameter to receive it, Python reports an argument error. Write `def show_name(self):` for a regular instance method.
+
+### Forgetting `self.` when saving an attribute
+
+`name = name` only deals with a local variable. Use `self.name = name` to store the value on this object.
+
+### Calling an attribute like a method, or a method like an attribute
 
 ```python
-class Student:
-    def __init__(self, name, age):
-        self.name = name
-        self.age = age
-
-    def __str__(self):
-        return f"Student(name={self.name}, age={self.age})"
-
-    def __repr__(self):
-        return f"Student('{self.name}', {self.age})"
-
-s = Student("Ravi", 20)
-print(s)        # Student(name=Ravi, age=20)       ← uses __str__
-print(repr(s))  # Student('Ravi', 20)               ← uses __repr__
-print([s])      # [Student('Ravi', 20)]              ← lists use __repr__
+student.name          # attribute: no parentheses
+student.show_result() # method: parentheses call it
 ```
 
-| Method | Purpose | When called |
-|--------|---------|-------------|
-| `__str__` | Human-readable, user-friendly output | `print(obj)`, `str(obj)`, f-strings |
-| `__repr__` | Developer-friendly, detailed output | `repr(obj)`, in lists, in debugger |
+### Mixing up class and object names
 
-> **Tip**: Always define at least `__repr__`. If you define only `__repr__`, Python uses it as a fallback for `__str__` too.
+`Student` is the class. `student_a` is a variable referring to an object. Python convention uses a capitalized class name and a lowercase object variable name to make the difference visible.
 
----
+### Expecting two names to mean two objects
 
-## 17. 🏷️ `@staticmethod` and `@classmethod`
+`second = first` gives a second name for the same object. Call the class again to create another object.
 
-### Regular Method (uses `self`):
-- Needs an **object** to be called
-- Can access instance data via `self`
+## 18. The main idea in one picture
 
-### `@classmethod` (uses `cls`):
-- Receives the **class** itself as the first argument
-- Can access/modify **class variables**
-- Often used as **alternative constructors**
+```text
+Class (design)
+    |
+    | call the class with values
+    v
+Object (one actual instance)
+    ├── attributes: this object's data
+    └── methods: actions that can use/change this object's data
 
-### `@staticmethod` (no `self`, no `cls`):
-- Doesn't need the object OR the class
-- Just a regular function that **logically belongs** to the class
-
-```python
-class Pizza:
-    total_pizzas = 0  # class variable
-
-    def __init__(self, size, toppings):
-        self.size = size          # instance variable
-        self.toppings = toppings  # instance variable
-        Pizza.total_pizzas += 1
-
-    # Regular method — needs an object (self)
-    def describe(self):
-        return f"{self.size} pizza with {', '.join(self.toppings)}"
-
-    # Class method — needs the class (cls)
-    @classmethod
-    def get_total(cls):
-        return f"Total pizzas made: {cls.total_pizzas}"
-
-    # Alternative constructor using classmethod
-    @classmethod
-    def margherita(cls):
-        return cls("Medium", ["cheese", "tomato", "basil"])
-
-    # Static method — needs nothing
-    @staticmethod
-    def validate_size(size):
-        return size in ["Small", "Medium", "Large"]
-
-# Using regular method (needs object):
-p1 = Pizza("Large", ["pepperoni", "mushroom"])
-print(p1.describe())  # Large pizza with pepperoni, mushroom
-
-# Using class method (through class name):
-p2 = Pizza.margherita()  # alternative constructor!
-print(p2.describe())     # Medium pizza with cheese, tomato, basil
-
-print(Pizza.get_total())  # Total pizzas made: 2
-
-# Using static method (no object needed):
-print(Pizza.validate_size("Medium"))  # True
-print(Pizza.validate_size("Huge"))    # False
+self = the object currently using a regular instance method
+__init__ = the setup method Python calls when the object is initialized
 ```
 
-### Summary table:
-
-| Type | First Param | Can access instance data? | Can access class data? |
-|------|-------------|--------------------------|----------------------|
-| Regular method | `self` | ✅ Yes | ✅ Yes |
-| `@classmethod` | `cls` | ❌ No | ✅ Yes |
-| `@staticmethod` | None | ❌ No | ❌ No |
-
----
-
-## 18. 🔐 Private Variables (`_` and `__`)
-
-Python uses **naming conventions** to indicate access levels:
-
-| Prefix | Meaning | Example | Accessibility |
-|--------|---------|---------|--------------|
-| No prefix | Public | `self.name` | Accessible from anywhere |
-| `_` (single underscore) | Protected (convention) | `self._name` | "Please don't touch this from outside" (but you still CAN) |
-| `__` (double underscore) | Private (name mangling) | `self.__name` | Hard to access from outside (Python renames it) |
-
-```python
-class Employee:
-    def __init__(self, name, salary, password):
-        self.name = name          # public — anyone can access
-        self._salary = salary     # protected — "internal use, don't touch"
-        self.__password = password  # private — Python hides this
-
-e = Employee("Ravi", 50000, "secret123")
-
-print(e.name)       # ✅ Ravi
-print(e._salary)    # ✅ 50000 (works, but you SHOULDN'T do this)
-# print(e.__password)  # ❌ AttributeError!
-
-# But Python doesn't truly hide it — it renames it (name mangling):
-print(e._Employee__password)  # ✅ secret123 (not recommended!)
-```
-
-> **Python's philosophy**: "We're all adults here." Python doesn't enforce strict privacy — it just uses conventions to **signal intent**.
-
----
-
-## 19. 🏠 `@property` Decorator
-
-`@property` lets you **access a method like a variable**. It's useful for:
-- Adding **validation** when setting values
-- Computing values **on the fly**
-- Making code **cleaner**
-
-```python
-class Circle:
-    def __init__(self, radius):
-        self._radius = radius  # store internally
-
-    @property
-    def radius(self):
-        """Getter — called when you READ circle.radius"""
-        return self._radius
-
-    @radius.setter
-    def radius(self, value):
-        """Setter — called when you WRITE circle.radius = ___"""
-        if value <= 0:
-            raise ValueError("Radius must be positive!")
-        self._radius = value
-
-    @property
-    def area(self):
-        """Computed property — calculated on the fly"""
-        return 3.14 * self._radius ** 2
-
-    @property
-    def diameter(self):
-        return self._radius * 2
-
-c = Circle(5)
-
-# These LOOK like variable access, but they're actually calling methods!
-print(c.radius)    # 5       ← calls the getter
-print(c.area)      # 78.5    ← calls the area property
-print(c.diameter)  # 10      ← calls the diameter property
-
-c.radius = 10      # ← calls the setter (validates!)
-print(c.area)      # 314.0
-
-# c.radius = -5    # ❌ ValueError: Radius must be positive!
-# c.area = 100     # ❌ AttributeError: can't set (no setter defined for area)
-```
-
----
-
-## 20. 🌳 Multiple Inheritance
-
-A class can inherit from **more than one parent class**.
-
-```python
-class Flyable:
-    def fly(self):
-        print(f"{self.name} is flying! 🦅")
-
-class Swimmable:
-    def swim(self):
-        print(f"{self.name} is swimming! 🏊")
-
-class Walkable:
-    def walk(self):
-        print(f"{self.name} is walking! 🚶")
-
-# Duck inherits from ALL THREE!
-class Duck(Flyable, Swimmable, Walkable):
-    def __init__(self, name):
-        self.name = name
-
-d = Duck("Donald")
-d.fly()   # Donald is flying! 🦅
-d.swim()  # Donald is swimming! 🏊
-d.walk()  # Donald is walking! 🚶
-```
-
-### Method Resolution Order (MRO):
-
-When two parents have the same method name, Python follows a specific order:
-
-```python
-class A:
-    def greet(self):
-        print("Hello from A")
-
-class B(A):
-    def greet(self):
-        print("Hello from B")
-
-class C(A):
-    def greet(self):
-        print("Hello from C")
-
-class D(B, C):  # inherits from both B and C
-    pass
-
-d = D()
-d.greet()  # Hello from B  (B comes first in the inheritance list)
-
-# Check the MRO:
-print(D.__mro__)
-# (<class 'D'>, <class 'B'>, <class 'C'>, <class 'A'>, <class 'object'>)
-```
-
-> **MRO Rule**: Python checks left to right → D → B → C → A → object
-
----
-
-## 21. 🎨 Abstract Class
-
-An abstract class is a class that **cannot be instantiated** (you can't create objects from it). It serves as a **template** that forces child classes to implement certain methods.
-
-```python
-from abc import ABC, abstractmethod
-
-class Shape(ABC):  # Abstract Base Class
-    @abstractmethod
-    def area(self):
-        """Every shape MUST implement area()"""
-        pass
-
-    @abstractmethod
-    def perimeter(self):
-        """Every shape MUST implement perimeter()"""
-        pass
-
-    def description(self):  # regular method — NOT abstract
-        return "I am a shape"
-
-# s = Shape()  # ❌ TypeError: Can't instantiate abstract class!
-
-class Circle(Shape):
-    def __init__(self, radius):
-        self.radius = radius
-
-    def area(self):  # MUST implement this
-        return 3.14 * self.radius ** 2
-
-    def perimeter(self):  # MUST implement this
-        return 2 * 3.14 * self.radius
-
-class Rectangle(Shape):
-    def __init__(self, width, height):
-        self.width = width
-        self.height = height
-
-    def area(self):
-        return self.width * self.height
-
-    def perimeter(self):
-        return 2 * (self.width + self.height)
-
-c = Circle(5)
-r = Rectangle(4, 6)
-
-print(c.area())        # 78.5
-print(c.perimeter())   # 31.4
-print(c.description()) # I am a shape  ← inherited from Shape
-
-print(r.area())        # 24
-print(r.perimeter())   # 20
-```
-
-### What if you forget to implement an abstract method?
-
-```python
-class Triangle(Shape):
-    def __init__(self, base, height):
-        self.base = base
-        self.height = height
-
-    def area(self):
-        return 0.5 * self.base * self.height
-
-    # ❌ Forgot to implement perimeter()!
-
-# t = Triangle(3, 4)
-# TypeError: Can't instantiate abstract class Triangle
-# with abstract method perimeter
-```
-
-> Abstract classes are like a **contract**: "If you want to be a Shape, you MUST have `area()` and `perimeter()`."
-
----
-
-## 22. 📋 Quick Cheat Sheet
-
-```python
-# ─── DEFINE A CLASS ───
-class MyClass:
-    class_var = "shared"                # class variable
-
-    def __init__(self, x):              # constructor
-        self.x = x                      # instance variable
-
-    def method(self):                   # regular method
-        return self.x
-
-    @classmethod
-    def class_method(cls):              # class method
-        return cls.class_var
-
-    @staticmethod
-    def static_method():               # static method
-        return "I don't need self or cls"
-
-    def __str__(self):                  # print-friendly string
-        return f"MyClass(x={self.x})"
-
-    def __repr__(self):                 # developer string
-        return f"MyClass({self.x})"
-
-
-# ─── CREATE OBJECTS ───
-obj = MyClass(10)
-print(obj.x)            # 10
-print(obj.method())     # 10
-print(obj)              # MyClass(x=10)
-
-
-# ─── INHERITANCE ───
-class Child(MyClass):
-    def __init__(self, x, y):
-        super().__init__(x)
-        self.y = y
-
-
-# ─── KEY CONCEPTS ───
-# self          → refers to the current object
-# __init__      → runs when object is created (constructor)
-# super()       → call parent class method
-# @property     → access method like a variable
-# @classmethod  → method that gets the class, not the object
-# @staticmethod → method that gets nothing (utility function)
-# __str__       → what print() shows
-# __repr__      → what the debugger / lists show
-# ABC           → abstract base class (can't instantiate)
-# __var         → private (name mangled)
-# _var          → protected (convention only)
-```
-
----
-
-### 🎯 When to Use What?
-
-| Situation | Use |
-|-----------|-----|
-| Simple key-value data, no behavior | `dict` |
-| Ordered collection of same-type items | `list` |
-| Data with behavior (functions) | `class` |
-| Data with rules/validation | `class` with `@property` |
-| Multiple similar types sharing behavior | `class` + inheritance |
-| Blueprint that forces child to implement methods | Abstract class |
-
----
-
-> 💡 **Final takeaway**: A class is just a way to **group related data and functions together**. Start simple — use a dict. When you find yourself passing the same dict to many functions, that's when a class would make your code cleaner.
-
+## 19. Practice questions
+
+Try these before looking at the examples again:
+
+1. Create a `MobilePhone` class with `brand`, `model`, and `price` attributes. Create two phone objects and print each model.
+2. Add a `show_details()` method that returns the phone's brand, model, and price in one sentence.
+3. Create a `Movie` class with `title` and `rating`. Add an `is_recommended()` method that returns `True` when the rating is at least 8.
+4. Create two `BankAccount` objects. Deposit into one and show that the other balance stays the same.
+5. Make a list containing three `Student` objects. Use a loop to print each student's name and whether they passed.
+6. In your own words, explain why `self.name = name` has `self.name` on the left and `name` on the right.
+7. If `second = first`, did Python create another object? Explain what both names refer to.
+8. For each need, choose a list, dictionary, or class and explain why: (a) store today's temperatures in order; (b) store one person's name and city; (c) represent many library books, each with a title and a borrow action.
+
+## 20. Quick review
+
+| Term | Beginner meaning |
+|---|---|
+| Class | A description used to make objects of a kind |
+| Object / instance | One particular thing created from a class |
+| Attribute | Data associated with an object |
+| Method | A function defined in a class, often acting on an object |
+| `__init__` | The method Python calls to initialize an object's starting data |
+| `self` | The current object passed to a regular instance method |
+| State | The current values stored in an object's attributes |
+
+### Final takeaway
+
+Use a **list** to collect items, a **dictionary** to label simple values, and a **class** when you want a reusable design for similar objects that have their own data and related actions. An object keeps its own state; `self` lets its methods work with that state; and `__init__` sets the object up when it is created.
