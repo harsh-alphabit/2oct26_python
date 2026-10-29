@@ -10,7 +10,12 @@ class Student:
 
 
 student = Student("Ravi", 19, 82)
+student2 = Student("harsh", 23, 100)
 
 print("Name:", student.name)
 print("Age:", student.age)
 print("Marks:", student.marks)
+
+print("Name:", student2.name)
+print("Age:", student2.age)
+print("Marks:", student2.marks)
