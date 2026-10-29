@@ -2,6 +2,27 @@
 
 > **Module 6 lesson:** Learn how classes group related data and actions. Type each example, run it, and change the values yourself.
 
+### 💻 Companion Python Examples
+
+Run these files one at a time from the `module-6` folder. Each file focuses on one idea and includes comments explaining the code.
+
+| File | Concept |
+|---|---|
+| [01_class_and_objects.py](01_class_and_objects.py) | Class design and separate objects |
+| [02_init_and_attributes.py](02_init_and_attributes.py) | `__init__` and object attributes |
+| [03_self_and_methods.py](03_self_and_methods.py) | `self` and methods |
+| [04_each_object_has_own_data.py](04_each_object_has_own_data.py) | Each object has its own data |
+| [05_object_references.py](05_object_references.py) | Names referring to the same object |
+| [06_methods_change_state.py](06_methods_change_state.py) | Methods changing object state |
+| [07_list_of_objects.py](07_list_of_objects.py) | Storing objects in a list |
+| [08_class_list_dictionary_comparison.py](08_class_list_dictionary_comparison.py) | Choosing a list, dictionary, or class |
+| [09_real_world_bank_account.py](09_real_world_bank_account.py) | Real-world bank account example |
+| [10_real_world_library_book.py](10_real_world_library_book.py) | Real-world library book example |
+| [11_validation_in_init.py](11_validation_in_init.py) | Checking starting values |
+| [12_method_return_value.py](12_method_return_value.py) | Returning a value from a method |
+| [13_default_values.py](13_default_values.py) | Default values in `__init__` |
+| [ex.py](ex.py) | Interactive student records using a list of objects |
+
 ---
 
 ## 📌 Table of Contents
