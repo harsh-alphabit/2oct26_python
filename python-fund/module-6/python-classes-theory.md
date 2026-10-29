@@ -1,6 +1,6 @@
 # 🐍 Python Classes and Objects — Complete Beginner Guide
 
-> **Module 6 lesson:** Learn how classes group related data and actions. This lesson is designed for students who are new to OOP. Type each example, run it, and change the values yourself.
+> **Module 6 lesson:** Learn how classes group related data and actions. Type each example, run it, and change the values yourself.
 
 ---
 
