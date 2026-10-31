@@ -211,6 +211,108 @@ print(manager.describe_team())  # Asha manages 5 people.
 
 **Beginner tip:** Use inheritance when the new type really is a kind of the old type. If two things merely use one another, composition (keeping an object inside another object) may be a clearer fit.
 
+#### Common types of inheritance
+
+These names describe how parent and child classes are connected. Python supports all of these patterns.
+
+**1. Single inheritance — one child inherits from one parent.**
+
+```python
+class Animal:
+    def eat(self):
+        return "Eating"
+
+
+class Dog(Animal):
+    def bark(self):
+        return "Woof!"
+```
+
+`Dog` inherits from one parent, `Animal`.
+
+**2. Multilevel inheritance — a child inherits from a class that is already a child.**
+
+```python
+class Animal:
+    def breathe(self):
+        return "Breathing"
+
+
+class Mammal(Animal):
+    pass
+
+
+class Dog(Mammal):
+    pass
+```
+
+`Dog` inherits `breathe()` through `Mammal` from `Animal`.
+
+**3. Hierarchical inheritance — multiple children inherit from the same parent.**
+
+```python
+class Animal:
+    def eat(self):
+        return "Eating"
+
+
+class Dog(Animal):
+    pass
+
+
+class Cat(Animal):
+    pass
+```
+
+Both `Dog` and `Cat` inherit from `Animal`.
+
+**4. Multiple inheritance — one child inherits from more than one parent.**
+
+```python
+class Camera:
+    def take_photo(self):
+        return "Photo taken"
+
+
+class Phone:
+    def make_call(self):
+        return "Calling"
+
+
+class CameraPhone(Camera, Phone):
+    pass
+
+
+device = CameraPhone()
+print(device.take_photo())  # Photo taken
+print(device.make_call())   # Calling
+```
+
+`CameraPhone` inherits behavior from both `Camera` and `Phone`. When parent classes define methods with the same name, Python follows its **method resolution order (MRO)** to decide which implementation it finds first. Multiple inheritance can be useful, but keep it simple and learn about MRO when you need it.
+
+**5. Hybrid inheritance — a combination of two or more inheritance patterns.**
+
+For example, a design may combine multilevel and multiple inheritance. Hybrid inheritance is a name for the combined shape; it is not a separate Python keyword or feature.
+
+```python
+class Device:
+    pass
+
+
+class Camera(Device):
+    pass
+
+
+class Phone(Device):
+    pass
+
+
+class SmartCameraPhone(Camera, Phone):
+    pass
+```
+
+Here, `Camera` and `Phone` inherit from `Device`, and `SmartCameraPhone` inherits from both. This combines hierarchical and multiple inheritance.
+
 ### 3.3 Polymorphism
 
 **Simple meaning:** Different object types can respond to the same method call in their own way.
