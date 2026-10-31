@@ -1,22 +1,22 @@
 # Python OOP Concepts for Beginners
 
-Object-oriented programming (OOP) is a way to organize a program around **objects**. An object brings together related information and the actions that use that information.
+Object-oriented programming (OOP) is a way to organize a program around **objects**. An object keeps related data and the actions that use that data together.
 
 This guide uses plain language, small examples, and practical situations. You can read it after learning Python variables, functions, lists, and dictionaries. The class-and-object lesson in this module covers those basics in more detail.
 
 ## Contents
 
 1. [What is OOP?](#1-what-is-oop)
-2. [Why do we need OOP?](#2-why-do-we-need-oop)
-3. [POP and OOP: what is the difference?](#3-pop-and-oop-what-is-the-difference)
-4. [Class, object, attributes, and methods](#4-class-object-attributes-and-methods)
+2. [Why use OOP?](#2-why-use-oop)
+3. [POP and OOP](#3-pop-and-oop)
+4. [Class and object basics](#4-class-and-object-basics)
 5. [The four main OOP concepts](#5-the-four-main-oop-concepts)
    - [Encapsulation](#51-encapsulation)
-   - [Inheritance](#52-inheritance)
-   - [Polymorphism](#53-polymorphism)
+   - [Inheritance and its types](#52-inheritance-and-its-types)
+   - [Polymorphism, overloading, and overriding](#53-polymorphism-overloading-and-overriding)
    - [Abstraction](#54-abstraction)
-6. [Combined use case: a notification system](#6-combined-use-case-a-notification-system)
-7. [When is OOP useful?](#7-when-is-oop-useful)
+6. [Combined example: notifications](#6-combined-example-notifications)
+7. [When to use OOP](#7-when-to-use-oop)
 8. [Common beginner mistakes](#8-common-beginner-mistakes)
 9. [Quick revision and practice](#9-quick-revision-and-practice)
 
@@ -37,9 +37,9 @@ OOP gives us a way to describe that kind of thing once, then create as many sepa
 
 OOP is useful when a program has groups of similar things, each with its own data and related actions. It is one way to organize code; small scripts often work perfectly well with functions and dictionaries.
 
-## 2. Why do we need OOP?
+## 2. Why use OOP?
 
-For a very small task, a few variables and functions are easy to understand. As a program grows, it may have many related things to track. Keeping every value in separate variables and passing them to many functions can make the code harder to update and easier to mix up.
+For a very small task, a few variables and functions are easy to understand. As a program grows, it may have many similar things to track. Keeping every value separate and passing it to many functions can make the code harder to update and easier to mix up.
 
 For example, a shop program may need to manage hundreds of products. Each product has a name, price, and stock count. It may also need actions such as checking stock or applying a discount. A `Product` class keeps the data and related actions in one clear place, and each product object keeps its own values.
 
@@ -53,15 +53,15 @@ OOP can help us:
 
 OOP does not automatically make every program better. It is most useful when the program has enough related objects and behavior to benefit from that organization.
 
-## 3. POP and OOP: what is the difference?
+## 3. POP and OOP
 
-**POP** usually means **procedural-oriented programming**. In POP, we organize a program mainly as a sequence of steps and functions that operate on data. In OOP, we organize more of the program around objects that combine data with related methods.
+**POP** is commonly expanded as **procedure-oriented programming**; the style is also called **procedural programming**. It organizes a program around procedures (in Python, usually functions) and the steps they perform on data. **OOP** means **object-oriented programming**. It organizes a program around objects, which hold data and provide related methods.
 
 Both approaches can solve the same problem. Python supports functions and procedural code as well as OOP, and real projects often use a mix.
 
 | | POP (procedural-oriented programming) | OOP (object-oriented programming) |
 |---|---|---|
-| Main focus | Steps and functions | Objects that combine data and behavior |
+| Main focus | Steps and functions (procedures) | Objects that hold data and provide behavior |
 | Where data lives | Often in separate variables or data structures passed to functions | In attributes belonging to objects |
 | How actions are organized | Functions are called with the data they need | Methods are called on the related object |
 | A natural fit | Short scripts or tasks that follow a clear sequence | Programs with many similar things, each with its own data and actions |
@@ -112,7 +112,7 @@ In the procedural example, the balance is passed into a function. In the OOP exa
 
 Neither style is always best. Choose the structure that makes the program easiest to read, explain, and change.
 
-## 4. Class, object, attributes, and methods
+## 4. Class and object basics
 
 Here is a small class. Read it from the top: `class` defines the design, `__init__` sets up a new object, and methods describe actions.
 
@@ -134,20 +134,20 @@ city_bike.change_gear(3)
 print(city_bike.describe())  # A blue bicycle in gear 3
 ```
 
-- `Bicycle` is the **class** (the reusable design).
-- `city_bike` is an **object** (one bicycle made from the design).
-- `color` and `gear` are **attributes** (values belonging to the object).
-- `change_gear()` and `describe()` are **methods** (functions attached to the class).
-- `__init__()` runs when a new object is created. It gives the object its starting values.
-- `self` means “this particular object.” `self.color` belongs to this bicycle; another bicycle can have another color.
+- **Class:** `Bicycle` is the reusable design that describes what a bicycle object stores and can do.
+- **Object:** `city_bike` is one bicycle created from the class. Each object has its own values.
+- **Attribute:** `color` and `gear` are values stored on an object.
+- **Method:** `change_gear()` and `describe()` are functions defined in the class for its objects to use.
+- **`__init__()`:** the setup method Python calls when a new object is created. It gives the object starting values.
+- **`self`:** the current object. `self.color` means the color stored on this particular bicycle.
 
 ## 5. The four main OOP concepts
 
 The four commonly taught OOP concepts are **encapsulation, inheritance, polymorphism, and abstraction**. These words sound formal, but each describes a practical way to organize code.
 
-### 3.1 Encapsulation
+### 5.1 Encapsulation
 
-**Simple meaning:** Keep related data and actions together, and provide clear methods for working with the data.
+**Simple meaning:** Keep an object's data and the methods that use it together. Use those methods to apply the object's rules.
 
 For example, a wallet has a balance. Instead of having every part of a program change the balance however it wants, we can provide methods that apply simple rules.
 
@@ -176,9 +176,9 @@ In Python, a leading underscore in `_balance` is a **convention** that says “t
 
 **Real-world use:** A shopping cart can keep its item list together with `add_item()`, `remove_item()`, and `total_price()` methods. Those methods can make sure the cart is updated consistently.
 
-### 3.2 Inheritance
+### 5.2 Inheritance and its types
 
-**Simple meaning:** Create a new class based on an existing class, so it can reuse shared behavior and add or change details.
+**Simple meaning:** Make a new class from an existing class so it can reuse or customize behavior.
 
 Imagine a company app with several kinds of employees. All employees have a name, but a manager also has a team size.
 
@@ -211,7 +211,7 @@ print(manager.describe_team())  # Asha manages 5 people.
 
 **Beginner tip:** Use inheritance when the new type really is a kind of the old type. If two things merely use one another, composition (keeping an object inside another object) may be a clearer fit.
 
-#### Common types of inheritance
+#### Common inheritance types
 
 These names describe how parent and child classes are connected. Python supports all of these patterns.
 
@@ -313,9 +313,9 @@ class SmartCameraPhone(Camera, Phone):
 
 Here, `Camera` and `Phone` inherit from `Device`, and `SmartCameraPhone` inherits from both. This combines hierarchical and multiple inheritance.
 
-### 3.3 Polymorphism
+### 5.3 Polymorphism, overloading, and overriding
 
-**Simple meaning:** Different object types can respond to the same method call in their own way.
+**Simple meaning:** Different kinds of objects can use the same method name and do the action in their own way.
 
 For example, different payment options can all provide a `pay()` method. The checkout code can call `pay()` without needing to know each payment type's internal steps.
 
@@ -342,11 +342,9 @@ Both classes have a `pay()` method, but each one handles the call in its own way
 
 **Real-world use:** A report can have `export()` methods for PDF, CSV, and Excel output. The rest of the program can ask each report exporter to `export()` without repeating the export-selection logic everywhere.
 
-#### Method overloading and method overriding
+#### Method overloading
 
-These terms describe two different ideas. Both are related to how methods are used, but they work differently.
-
-**Method overloading** means using the same method name for different kinds or numbers of inputs. Some languages let you define several methods with the same name and different parameter lists. Python does not support that form of method overloading directly: if you define the same method name more than once in a class, the later definition replaces the earlier one.
+**Method overloading** means using one method name for different input counts or types. Some languages let you write multiple methods with the same name but different parameter lists. Python does not support that form directly: if a class defines the same method name more than once, the last definition replaces earlier ones.
 
 In Python, optional parameters are a simple way to handle a few different call patterns:
 
@@ -361,9 +359,11 @@ print(greeter.greet())        # Hello, there!
 print(greeter.greet("Mina")) # Hello, Mina!
 ```
 
-One method handles both calls. This is often called **overloading-like behavior** in Python. Python also supports operator overloading: for example, a class can define `__add__()` to customize what the `+` operator does for its objects.
+One method handles both calls. This is a simple Python way to accept different call patterns; it is not the same as defining multiple methods with the same name. Python also supports **operator overloading**: a class can define special methods such as `__add__()` to give an operator like `+` a meaning for its objects.
 
-**Method overriding** happens when a child class provides its own version of a method it inherits from a parent class. The child version is used for child objects.
+#### Method overriding
+
+**Method overriding** happens when a child class replaces an inherited method with its own version. Calls on child objects use the child's version.
 
 ```python
 class Animal:
@@ -394,9 +394,9 @@ Meow!
 
 The same method call, `speak()`, gives behavior suited to each object's type. That is also an example of **polymorphism**. A child method can call the parent's version with `super()` when it wants to extend the inherited behavior.
 
-### 3.4 Abstraction
+### 5.4 Abstraction
 
-**Simple meaning:** Show the important operation and hide the detailed steps behind it.
+**Simple meaning:** Show what an object can do while hiding the details of how it does it.
 
 When you use an ATM, you choose “withdraw cash.” You do not need to manage every internal communication step yourself. Programs can offer a similarly clear operation.
 
@@ -428,7 +428,7 @@ print(exporter.export("Monthly sales"))
 
 **Relationship to polymorphism:** Abstraction defines a clear operation to use; polymorphism lets different object types carry out that operation in different ways.
 
-## 6. Combined use case: a notification system
+## 6. Combined example: notifications
 
 This small example brings together the four ideas. A notification system can send a message by email or text. The shared interface is `send()`, while each service handles sending in its own way.
 
@@ -478,7 +478,7 @@ What the example demonstrates:
 
 This is a learning example. A real application would connect to email or messaging services, handle failures, protect personal data, and avoid printing private recipient information.
 
-## 7. When is OOP useful?
+## 7. When to use OOP
 
 OOP can help when:
 
@@ -505,14 +505,18 @@ Choose a simpler approach when it fits. A list is often enough for a group of nu
 
 | Term | Remember it as |
 |---|---|
-| Class | A reusable design |
-| Object | One item made from a class |
-| Attribute | Data stored on an object |
-| Method | An action defined in a class |
-| Encapsulation | Keep related data and operations together; offer clear ways to use them |
-| Inheritance | Build a more specific class from a general class |
-| Polymorphism | Same method call, behavior suited to each object |
-| Abstraction | Provide a clear operation while hiding implementation details |
+| Term | Simple definition |
+|---|---|
+| Class | A design for creating objects |
+| Object | One item created from a class |
+| Attribute | A value stored on an object |
+| Method | A function defined in a class |
+| Encapsulation | Keep data and related methods together, and use methods to apply rules |
+| Inheritance | Create a class that reuses or customizes another class's behavior |
+| Polymorphism | The same method call can work differently for different object types |
+| Overloading | Use one method name for different inputs; Python handles this differently from some languages |
+| Overriding | A child class supplies its own version of an inherited method |
+| Abstraction | Show the needed operation and hide its implementation details |
 
 ### Practice questions
 
