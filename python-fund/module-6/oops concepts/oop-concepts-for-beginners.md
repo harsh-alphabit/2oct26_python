@@ -7,16 +7,18 @@ This guide uses plain language, small examples, and practical situations. You ca
 ## Contents
 
 1. [What is OOP?](#1-what-is-oop)
-2. [Class, object, attributes, and methods](#2-class-object-attributes-and-methods)
-3. [The four main OOP concepts](#3-the-four-main-oop-concepts)
-   - [Encapsulation](#31-encapsulation)
-   - [Inheritance](#32-inheritance)
-   - [Polymorphism](#33-polymorphism)
-   - [Abstraction](#34-abstraction)
-4. [Combined use case: a notification system](#4-combined-use-case-a-notification-system)
-5. [When is OOP useful?](#5-when-is-oop-useful)
-6. [Common beginner mistakes](#6-common-beginner-mistakes)
-7. [Quick revision and practice](#7-quick-revision-and-practice)
+2. [Why do we need OOP?](#2-why-do-we-need-oop)
+3. [POP and OOP: what is the difference?](#3-pop-and-oop-what-is-the-difference)
+4. [Class, object, attributes, and methods](#4-class-object-attributes-and-methods)
+5. [The four main OOP concepts](#5-the-four-main-oop-concepts)
+   - [Encapsulation](#51-encapsulation)
+   - [Inheritance](#52-inheritance)
+   - [Polymorphism](#53-polymorphism)
+   - [Abstraction](#54-abstraction)
+6. [Combined use case: a notification system](#6-combined-use-case-a-notification-system)
+7. [When is OOP useful?](#7-when-is-oop-useful)
+8. [Common beginner mistakes](#8-common-beginner-mistakes)
+9. [Quick revision and practice](#9-quick-revision-and-practice)
 
 ---
 
@@ -35,7 +37,82 @@ OOP gives us a way to describe that kind of thing once, then create as many sepa
 
 OOP is useful when a program has groups of similar things, each with its own data and related actions. It is one way to organize code; small scripts often work perfectly well with functions and dictionaries.
 
-## 2. Class, object, attributes, and methods
+## 2. Why do we need OOP?
+
+For a very small task, a few variables and functions are easy to understand. As a program grows, it may have many related things to track. Keeping every value in separate variables and passing them to many functions can make the code harder to update and easier to mix up.
+
+For example, a shop program may need to manage hundreds of products. Each product has a name, price, and stock count. It may also need actions such as checking stock or applying a discount. A `Product` class keeps the data and related actions in one clear place, and each product object keeps its own values.
+
+OOP can help us:
+
+- **Organize related code:** keep an object's data and its actions together.
+- **Reuse a design:** create many objects from one class instead of writing the same structure repeatedly.
+- **Keep objects' data separate:** changing one product's stock does not change another product's stock.
+- **Make changes easier to manage:** a clear class can own the rules for its data and actions.
+- **Extend a program:** new object types can reuse or provide their own behavior when that makes sense.
+
+OOP does not automatically make every program better. It is most useful when the program has enough related objects and behavior to benefit from that organization.
+
+## 3. POP and OOP: what is the difference?
+
+**POP** usually means **procedural-oriented programming**. In POP, we organize a program mainly as a sequence of steps and functions that operate on data. In OOP, we organize more of the program around objects that combine data with related methods.
+
+Both approaches can solve the same problem. Python supports functions and procedural code as well as OOP, and real projects often use a mix.
+
+| | POP (procedural-oriented programming) | OOP (object-oriented programming) |
+|---|---|---|
+| Main focus | Steps and functions | Objects that combine data and behavior |
+| Where data lives | Often in separate variables or data structures passed to functions | In attributes belonging to objects |
+| How actions are organized | Functions are called with the data they need | Methods are called on the related object |
+| A natural fit | Short scripts or tasks that follow a clear sequence | Programs with many similar things, each with its own data and actions |
+
+### One small example in each style
+
+Suppose we want to add money to a wallet.
+
+**Procedural style (POP):** the function receives the balance and amount, then returns the new balance.
+
+```python
+def add_money(balance, amount):
+    if amount <= 0:
+        raise ValueError("Amount must be greater than zero")
+    return balance + amount
+
+
+wallet_balance = 100
+wallet_balance = add_money(wallet_balance, 50)
+print(wallet_balance)  # 150
+```
+
+**Object-oriented style (OOP):** the wallet object stores its balance, and its method updates that balance.
+
+```python
+class Wallet:
+    def __init__(self, balance=0):
+        self.balance = balance
+
+    def add_money(self, amount):
+        if amount <= 0:
+            raise ValueError("Amount must be greater than zero")
+        self.balance += amount
+
+
+wallet = Wallet(100)
+wallet.add_money(50)
+print(wallet.balance)  # 150
+```
+
+In the procedural example, the balance is passed into a function. In the OOP example, the wallet object keeps its balance and the method that updates it together. For one wallet, either approach is straightforward. If a program manages many wallets, each with its own balance and operations, objects can make it clearer which balance is being changed.
+
+### Which one should I choose?
+
+- Use **POP** when the task is small and reads naturally as a sequence of steps or a few functions.
+- Consider **OOP** when you have many similar entities with their own data and related operations.
+- Use a **mix** when it helps: for example, objects can represent customers while regular functions handle general calculations.
+
+Neither style is always best. Choose the structure that makes the program easiest to read, explain, and change.
+
+## 4. Class, object, attributes, and methods
 
 Here is a small class. Read it from the top: `class` defines the design, `__init__` sets up a new object, and methods describe actions.
 
@@ -64,7 +141,7 @@ print(city_bike.describe())  # A blue bicycle in gear 3
 - `__init__()` runs when a new object is created. It gives the object its starting values.
 - `self` means “this particular object.” `self.color` belongs to this bicycle; another bicycle can have another color.
 
-## 3. The four main OOP concepts
+## 5. The four main OOP concepts
 
 The four commonly taught OOP concepts are **encapsulation, inheritance, polymorphism, and abstraction**. These words sound formal, but each describes a practical way to organize code.
 
@@ -197,7 +274,7 @@ print(exporter.export("Monthly sales"))
 
 **Relationship to polymorphism:** Abstraction defines a clear operation to use; polymorphism lets different object types carry out that operation in different ways.
 
-## 4. Combined use case: a notification system
+## 6. Combined use case: a notification system
 
 This small example brings together the four ideas. A notification system can send a message by email or text. The shared interface is `send()`, while each service handles sending in its own way.
 
@@ -247,7 +324,7 @@ What the example demonstrates:
 
 This is a learning example. A real application would connect to email or messaging services, handle failures, protect personal data, and avoid printing private recipient information.
 
-## 5. When is OOP useful?
+## 7. When is OOP useful?
 
 OOP can help when:
 
@@ -258,7 +335,7 @@ OOP can help when:
 
 Choose a simpler approach when it fits. A list is often enough for a group of numbers, and a dictionary can be a good choice for one simple record. Too many tiny classes can make a program harder to follow.
 
-## 6. Common beginner mistakes
+## 8. Common beginner mistakes
 
 1. **Thinking a class and an object are the same.** The class is the design; an object is one instance created from it.
 2. **Forgetting `self` in an instance method.** Python passes the current object as the first argument automatically.
@@ -268,7 +345,7 @@ Choose a simpler approach when it fits. A list is often enough for a group of nu
 6. **Trying to use all four concepts in every program.** They are tools; use the ones that make the code easier to understand.
 7. **Putting everything into one large class.** Give a class one clear responsibility and use functions or other classes where appropriate.
 
-## 7. Quick revision and practice
+## 9. Quick revision and practice
 
 ### Quick revision
 
