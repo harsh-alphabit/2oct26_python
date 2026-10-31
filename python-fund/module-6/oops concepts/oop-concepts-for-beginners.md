@@ -342,6 +342,58 @@ Both classes have a `pay()` method, but each one handles the call in its own way
 
 **Real-world use:** A report can have `export()` methods for PDF, CSV, and Excel output. The rest of the program can ask each report exporter to `export()` without repeating the export-selection logic everywhere.
 
+#### Method overloading and method overriding
+
+These terms describe two different ideas. Both are related to how methods are used, but they work differently.
+
+**Method overloading** means using the same method name for different kinds or numbers of inputs. Some languages let you define several methods with the same name and different parameter lists. Python does not support that form of method overloading directly: if you define the same method name more than once in a class, the later definition replaces the earlier one.
+
+In Python, optional parameters are a simple way to handle a few different call patterns:
+
+```python
+class Greeter:
+    def greet(self, name="there"):
+        return f"Hello, {name}!"
+
+
+greeter = Greeter()
+print(greeter.greet())        # Hello, there!
+print(greeter.greet("Mina")) # Hello, Mina!
+```
+
+One method handles both calls. This is often called **overloading-like behavior** in Python. Python also supports operator overloading: for example, a class can define `__add__()` to customize what the `+` operator does for its objects.
+
+**Method overriding** happens when a child class provides its own version of a method it inherits from a parent class. The child version is used for child objects.
+
+```python
+class Animal:
+    def speak(self):
+        return "Some sound"
+
+
+class Dog(Animal):
+    def speak(self):  # Overrides Animal.speak()
+        return "Woof!"
+
+
+class Cat(Animal):
+    def speak(self):  # Overrides Animal.speak()
+        return "Meow!"
+
+
+for animal in [Dog(), Cat()]:
+    print(animal.speak())
+```
+
+Output:
+
+```text
+Woof!
+Meow!
+```
+
+The same method call, `speak()`, gives behavior suited to each object's type. That is also an example of **polymorphism**. A child method can call the parent's version with `super()` when it wants to extend the inherited behavior.
+
 ### 3.4 Abstraction
 
 **Simple meaning:** Show the important operation and hide the detailed steps behind it.
