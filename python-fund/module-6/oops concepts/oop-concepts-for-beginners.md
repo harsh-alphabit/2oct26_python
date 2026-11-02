@@ -10,15 +10,16 @@ This guide uses plain language, small examples, and practical situations. You ca
 2. [Why use OOP?](#2-why-use-oop)
 3. [POP and OOP](#3-pop-and-oop)
 4. [Class and object basics](#4-class-and-object-basics)
-5. [The four main OOP concepts](#5-the-four-main-oop-concepts)
+5. [Special names: `__init__`, `__str__`, `__name__`, and `__main__`](#5-special-names-__init__-__str__-__name__-and-__main__)
+6. [The four main OOP concepts](#6-the-four-main-oop-concepts)
    - [Encapsulation](#51-encapsulation)
    - [Inheritance and its types](#52-inheritance-and-its-types)
    - [Polymorphism, overloading, and overriding](#53-polymorphism-overloading-and-overriding)
    - [Abstraction](#54-abstraction)
-6. [Combined example: notifications](#6-combined-example-notifications)
-7. [When to use OOP](#7-when-to-use-oop)
-8. [Common beginner mistakes](#8-common-beginner-mistakes)
-9. [Quick revision and practice](#9-quick-revision-and-practice)
+7. [Combined example: notifications](#7-combined-example-notifications)
+8. [When to use OOP](#8-when-to-use-oop)
+9. [Common beginner mistakes](#9-common-beginner-mistakes)
+10. [Quick revision and practice](#10-quick-revision-and-practice)
 
 ---
 
@@ -141,7 +142,91 @@ print(city_bike.describe())  # A blue bicycle in gear 3
 - **`__init__()`:** the setup method Python calls when a new object is created. It gives the object starting values.
 - **`self`:** the current object. `self.color` means the color stored on this particular bicycle.
 
-## 5. The four main OOP concepts
+## 5. Special names: `__init__`, `__str__`, `__name__`, and `__main__`
+
+Python names with double underscores at the beginning and end are often called **dunder names** (short for “double underscore”). They look similar, but they do different jobs. `__init__` and `__str__` are special methods used with objects. `__name__` is a variable Python sets for each file. `__main__` is the special text value used to identify the file started directly.
+
+### `__init__`: set up a new object
+
+When you create an object, Python automatically calls its `__init__` method. Use it to give the object its starting information. You do not usually call `__init__` yourself.
+
+```python
+class Student:
+    def __init__(self, name, course):
+        # Save the starting information on this particular student object.
+        self.name = name
+        self.course = course
+
+
+student = Student("Mina", "Python")  # Python calls __init__ while making the object.
+print(student.name)  # Mina
+print(student.course)  # Python
+```
+
+Here, `name` and `course` are the values given to the setup method. `self.name` and `self.course` store those values on the new object, so its other methods can use them later.
+
+### `__str__`: choose the text shown for an object
+
+If you print an object without defining `__str__`, Python shows a technical description of it. Define `__str__` when you want a useful, human-readable description instead. Python calls it automatically for `print(object)` and `str(object)`.
+
+```python
+class Course:
+    def __init__(self, title, weeks):
+        self.title = title
+        self.weeks = weeks
+
+    def __str__(self):
+        # Python expects this method to return text.
+        return f"{self.title} course, {self.weeks} weeks long"
+
+
+course = Course("Python Basics", 6)
+print(course)       # Python Basics course, 6 weeks long
+course_text = str(course)
+print(course_text)  # Python Basics course, 6 weeks long
+```
+
+`__str__` describes an **object**. It is a method written inside a class.
+
+### `__name__` and `__main__`: tell whether a file was started or imported
+
+Every Python file gets a special variable called `__name__`. If you start that file directly, Python sets `__name__` to the text `"__main__"`. If another file imports it, Python sets `__name__` to the module's name instead.
+
+This check means: **“Run this block only if this file was started directly.”**
+
+```python
+# Put this in a file named greeting.py
+print("The value of __name__ is:", __name__)
+
+if __name__ == "__main__":
+    print("This file was started directly")
+```
+
+**Case 1: start `greeting.py` directly.** Python sets `__name__` to `"__main__"`, so the block runs:
+
+```text
+The value of __name__ is: __main__
+This file was started directly
+```
+
+**Case 2: import it from another file.** If `app.py` contains `import greeting` and you start `app.py`, the greeting file's `__name__` is `"greeting"`. Its `if` condition is false, so that block is skipped. Its top-level print still runs:
+
+```text
+The value of __name__ is: greeting
+```
+
+The `if __name__ == "__main__":` pattern is useful for keeping practice or demo code in a file while allowing another file to import its classes and functions without running that demo.
+
+| Name | What it is | What it does |
+|---|---|---|
+| `__init__` | Special method in a class | Sets up a new object with starting values |
+| `__str__` | Special method in a class | Returns readable text for an object |
+| `__name__` | Variable set by Python for a file | Contains `"__main__"` when started directly, or the module name when imported |
+| `__main__` | Special text value | Used in the `if __name__ == "__main__":` check |
+
+**Easy memory aid:** `__init__` sets an object up; `__str__` describes an object; `__name__` labels a file; `__main__` marks the file started directly.
+
+## 6. The four main OOP concepts
 
 The four commonly taught OOP concepts are **encapsulation, inheritance, polymorphism, and abstraction**. These words sound formal, but each describes a practical way to organize code.
 
@@ -428,7 +513,7 @@ print(exporter.export("Monthly sales"))
 
 **Relationship to polymorphism:** Abstraction defines a clear operation to use; polymorphism lets different object types carry out that operation in different ways.
 
-## 6. Combined example: notifications
+## 7. Combined example: notifications
 
 This small example brings together the four ideas. A notification system can send a message by email or text. The shared interface is `send()`, while each service handles sending in its own way.
 
@@ -478,7 +563,7 @@ What the example demonstrates:
 
 This is a learning example. A real application would connect to email or messaging services, handle failures, protect personal data, and avoid printing private recipient information.
 
-## 7. When to use OOP
+## 8. When to use OOP
 
 OOP can help when:
 
@@ -489,7 +574,7 @@ OOP can help when:
 
 Choose a simpler approach when it fits. A list is often enough for a group of numbers, and a dictionary can be a good choice for one simple record. Too many tiny classes can make a program harder to follow.
 
-## 8. Common beginner mistakes
+## 9. Common beginner mistakes
 
 1. **Thinking a class and an object are the same.** The class is the design; an object is one instance created from it.
 2. **Forgetting `self` in an instance method.** Python passes the current object as the first argument automatically.
@@ -499,7 +584,7 @@ Choose a simpler approach when it fits. A list is often enough for a group of nu
 6. **Trying to use all four concepts in every program.** They are tools; use the ones that make the code easier to understand.
 7. **Putting everything into one large class.** Give a class one clear responsibility and use functions or other classes where appropriate.
 
-## 9. Quick revision and practice
+## 10. Quick revision and practice
 
 ### Quick revision
 

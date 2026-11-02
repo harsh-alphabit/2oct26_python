@@ -1,0 +1,48 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="640" viewBox="0 0 1100 640" role="img" aria-labelledby="title desc">
+  <title id="title">Python underscores: one underscore vs two</title>
+  <desc id="desc">A beginner flow diagram comparing public names, one leading underscore, and two leading underscores in Python.</desc>
+  <defs>
+    <style>
+      .bg { fill: #f6f7fb; }
+      .title { font: 700  thirtypx Arial, sans-serif; font-size: 30px; fill: #172033; }
+      .sub { font: 16px Arial, sans-serif; fill: #475569; }
+      .head { font: 700 21px Arial, sans-serif; fill: #172033; }
+      .code { font: 700 24px Consolas, monospace; fill: #102a43; }
+      .body { font: 17px Arial, sans-serif; fill: #334155; }
+      .note { font: 15px Arial, sans-serif; fill: #475569; }
+      .box { stroke-width: 2; rx: 18; }
+      .arrow { stroke: #64748b; stroke-width: 3; fill: none; marker-end: url(#arrow); }
+    </style>
+    <marker id="arrow" markerWidth="10" markerHeight="10" refX="8" refY="3" orient="auto">
+      <path d="M0,0 L0,6 L9,3 z" fill="#64748b" />
+    </marker>
+  </defs>
+  <rect class="bg" width="1100" height="640" />
+  <text id="titleText" x="550" y="55" text-anchor="middle" class="title">What do _ and __ mean in Python?</text>
+  <text x="550" y="86" text-anchor="middle" class="sub">They are naming conventions and behavior hints, not security locks.</text>
+
+  <rect x="55" y="130" width="300" height="330" class="box" fill="#e8f3ff" stroke="#60a5fa" />
+  <text x="205" y="175" text-anchor="middle" class="head">No leading underscore</text>
+  <text x="205" y="222" text-anchor="middle" class="code">name</text>
+  <text x="85" y="270" class="body"><tspan x="85" dy="0">Ordinary public attribute.</tspan><tspan x="85" dy="30">Use it normally from other</tspan><tspan x="85" dy="25">parts of your program.</tspan></text>
+  <text x="85" y="390" class="note">Example: student.name</text>
+
+  <rect x="400" y="130" width="300" height="330" class="box" fill="#fff5dc" stroke="#f0b429" />
+  <text x="550" y="175" text-anchor="middle" class="head">One leading underscore</text>
+  <text x="550" y="222" text-anchor="middle" class="code">_name</text>
+  <text x="430" y="270" class="body"><tspan x="430" dy="0">A polite warning:</tspan><tspan x="430" dy="30">“Treat this as an internal</tspan><tspan x="430" dy="25">detail.” Python does not block</tspan><tspan x="430" dy="25">direct access or rename it.</tspan></text>
+  <text x="430" y="390" class="note">Example: account._attempts</text>
+
+  <rect x="745" y="130" width="300" height="330" class="box" fill="#f1eaff" stroke="#a78bfa" />
+  <text x="895" y="175" text-anchor="middle" class="head">Two leading underscores</text>
+  <text x="895" y="222" text-anchor="middle" class="code">__name</text>
+  <text x="775" y="270" class="body"><tspan x="775" dy="0">Python name-mangles it to</tspan><tspan x="775" dy="30">help avoid accidental clashes.</tspan><tspan x="775" dy="25">It is still not truly private.</tspan></text>
+  <text x="775" y="370" class="note">Inside class Student:</text>
+  <text x="775" y="397" class="code" style="font-size:18px">_Student__name</text>
+
+  <path d="M895 465 L895 505 L550 505" class="arrow" />
+  <rect x="180" y="520" width="740" height="80" rx="16" fill="#ffffff" stroke="#cbd5e1" stroke-width="2" />
+  <text x="550" y="553" text-anchor="middle" class="head">Best beginner rule</text>
+  <text x="550" y="580" text-anchor="middle" class="body">Use _name for “internal by convention”; use __name to avoid name clashes in subclasses.</text>
+  <text x="550" y="625" text-anchor="middle" class="note">Neither should be used to protect passwords, PINs, or other secrets.</text>
+</svg>
