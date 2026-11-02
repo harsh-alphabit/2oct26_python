@@ -20,6 +20,7 @@ This guide uses plain language, small examples, and practical situations. You ca
 8. [When to use OOP](#8-when-to-use-oop)
 9. [Common beginner mistakes](#9-common-beginner-mistakes)
 10. [Quick revision and practice](#10-quick-revision-and-practice)
+11. [Decorators](#11-decorators)
 
 ---
 
@@ -615,3 +616,78 @@ Choose a simpler approach when it fits. A list is often enough for a group of nu
 ### One-line memory aid
 
 > **Encapsulation** groups and protects usage, **inheritance** reuses and specializes, **polymorphism** gives one call different behaviors, and **abstraction** presents a simple operation while hiding its steps.
+
+## 11. Decorators
+
+A **decorator** is a function that adds an action around another function. It lets us add behavior without rewriting the original function's main job.
+
+Imagine a function is a gift. A decorator is like wrapping paper: the gift is still there, but the wrapper adds something around it.
+
+### Basic example
+
+```python
+def announce(function):
+    # function is the function we are decorating.
+    def wrapper():
+        print("Starting the task")
+        function()  # Run the original function.
+        print("Task finished")
+
+    return wrapper  # Give Python the new wrapped function.
+
+
+@announce
+def greet():
+    print("Hello, students!")
+
+
+greet()
+```
+
+Output:
+
+```text
+Starting the task
+Hello, students!
+Task finished
+```
+
+The `@announce` line tells Python to decorate `greet`. It is a shorter way of writing `greet = announce(greet)`. When we call `greet()`, Python runs the wrapper, which runs the original greeting between the two extra messages.
+
+### Practical example: check login before showing a student report
+
+Here, the decorator checks whether the user is logged in before allowing the report function to run. The `is_logged_in` value is only a classroom example; a real website must use its framework's proper authentication system.
+
+```python
+def requires_login(function):
+    def wrapper(is_logged_in, *args, **kwargs):
+        if not is_logged_in:
+            return "Please log in to view this report."
+
+        # If the user is logged in, continue to the original function.
+        return function(*args, **kwargs)
+
+    return wrapper
+
+
+@requires_login
+def show_report(student_name):
+    return f"Showing the report for {student_name}."
+
+
+print(show_report(False, "Mina"))  # Access is refused.
+print(show_report(True, "Mina"))   # The original function runs.
+```
+
+`*args` and `**kwargs` let the wrapper pass along extra positional and named values to the original function. You can learn decorators first without fully understanding those two features; they are used here so the wrapper can work with function inputs.
+
+### When decorators are useful
+
+Decorators are useful when several functions need the same extra behavior, such as checking access, printing log messages, or measuring how long a function takes. Python web frameworks also use decorators to attach behavior to view functions.
+
+**Remember:** `@something` above a function means Python is wrapping or changing how that function is used. The function still performs its original job when the decorator allows it to run.
+
+### Practice
+
+1. Create a decorator that prints `Before` before a function runs and `After` when it finishes.
+2. Decorate a function that prints a course name, then call it and observe the order of the messages.
