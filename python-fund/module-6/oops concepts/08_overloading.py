@@ -4,6 +4,19 @@
 # Overloading means using one method name for different kinds or amounts of input.
 # BASIC EXAMPLE: Python doesn't keep multiple same-named definitions in one class.
 # An optional value lets one method handle two simple call patterns.
+
+'''
+class Calculator:
+    def add(self, a, b):
+        return a + b
+
+    def add(self, a, b, c): # This overwrites the 2-argument version entirely
+        return a + b + c
+
+calc = Calculator()
+# calc.add(2, 3)  <-- Raises a TypeError: missing 1 required positional argument: 'c'
+#'''
+
 class Greeter:
     def greet(self, name="there"):
         # If no name is supplied, Python uses the default value "there".
