@@ -21,6 +21,7 @@ This guide uses plain language, small examples, and practical situations. You ca
 9. [Common beginner mistakes](#9-common-beginner-mistakes)
 10. [Quick revision and practice](#10-quick-revision-and-practice)
 11. [Decorators](#11-decorators)
+12. [Access specifiers in Python](#12-access-specifiers-in-python)
 
 ---
 
@@ -691,3 +692,74 @@ Decorators are useful when several functions need the same extra behavior, such 
 
 1. Create a decorator that prints `Before` before a function runs and `After` when it finishes.
 2. Decorate a function that prints a course name, then call it and observe the order of the messages.
+
+## 12. Access specifiers in Python
+
+Some languages have strict access specifiers such as `public`, `protected`, and `private`. These words decide which parts of a program are allowed to use a variable or method.
+
+**Python works differently:** it does not strictly block access using those three keywords. Python uses naming styles to give other programmers hints about how an attribute is meant to be used.
+
+### No underscore: public style
+
+```python
+class Student:
+    def __init__(self):
+        self.name = "Mina"
+
+
+student = Student()
+print(student.name)  # Normal public access
+```
+
+`name` has no leading underscore, so it is ordinary to use from other code.
+
+### One underscore: `_name`
+
+```python
+class Student:
+    def __init__(self):
+        self._grade = "A"
+
+    def get_grade(self):
+        return self._grade
+
+
+student = Student()
+print(student.get_grade())  # Recommended: use the class method
+print(student._grade)       # Python allows this too
+```
+
+One underscore means: **“This is an inside detail. Please use the class's methods instead of reaching in directly.”** It is a convention (a shared habit), not a lock. Python still allows `student._grade`.
+
+Some people call `_grade` “protected,” but it is not protected by Python. The underscore only gives a polite warning to other programmers.
+
+### Two underscores: `__name`
+
+```python
+class Student:
+    def __init__(self):
+        self.__note = "Course progress"
+
+    def get_note(self):
+        return self.__note
+
+
+student = Student()
+print(student.get_note())
+```
+
+Two leading underscores make Python change the attribute's internal name. In this example, it becomes something like `_Student__note`. This is called **name mangling**. It helps prevent accidental name clashes, especially between a parent class and a child class.
+
+It still does not make the value secret or secure. The value can be reached using the changed name, but normal code should use the method provided by the class.
+
+### Quick comparison
+
+| Name style | What it tells a programmer | Does Python block outside access? |
+|---|---|---|
+| `name` | Ordinary public attribute | No |
+| `_name` | Treat this as an internal detail | No |
+| `__name` | Rename internally to help avoid accidental clashes | No; the internal name is changed |
+
+**Easy way to remember:** `_name` is a “please don't touch directly” note. `__name` asks Python to rename it to avoid accidental clashes. Neither is a security barrier, so do not use underscores to protect passwords or PINs.
+
+For a visual summary, see [access_specifiers_flow.svg](access_specifiers_flow.svg) and the commented code in [03_access_specifiers.py](03_access_specifiers.py).
