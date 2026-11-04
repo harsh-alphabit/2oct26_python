@@ -1,142 +1,165 @@
 # Module 8: Databases with Python
 
-These notes explain the database ideas used in this module from the beginning. A **database** is an organized place to store information so a program can add it, find it, change it, or remove it later.
+These notes start with the basic idea of a database and gradually build up to using related tables from Python. The examples use Python's built-in `sqlite3` module, so no separate database server is needed.
 
-## 1. Why use a database?
+## Learning path
 
-A program can keep information in variables while it runs, but that information usually disappears when the program closes. A database stores information on disk so it is still available later. Databases are useful for student records, products, orders, appointments, and many other kinds of information.
+1. Understand why programs use databases.
+2. Learn tables, rows, columns, and SQL.
+3. Connect Python to SQLite and perform basic operations.
+4. Learn keys, rules, and relationships between tables.
+5. Use a join table and `JOIN` queries.
+6. Recognize DDL, DML, DQL, and TCL commands.
 
-## 2. Database vocabulary
+## 1. What is a database?
 
-- A **database** contains related information.
-- A **table** stores one kind of information, much like a spreadsheet sheet.
-- A **row** (also called a record) contains information about one item or person.
-- A **column** (also called a field) describes one kind of information, such as `name` or `city`.
-- A **primary key** is a value that uniquely identifies each row. An `id` column is often used for this.
-- A **query** is an instruction sent to the database, usually written in SQL.
+A **database** is an organized place to store information so it remains available after a program ends. A school may store students and courses; a shop may store products and orders.
 
-Imagine a `students` table with columns `id`, `name`, and `city`:
+For example, a Python list can hold student names while a program runs:
+
+```python
+students = ["Asha", "Ravi"]
+```
+
+When the program stops, this list normally disappears. A database saves information on disk and provides ways to find, add, change, and remove it. A database also lets us connect related information and enforce rules about what may be stored.
+
+## 2. Tables, rows, and columns
+
+A **relational database** organizes information in tables. A table is a little like a spreadsheet:
+
+- A **table** holds information about one kind of thing.
+- A **column** describes one fact about that thing, such as a name or city.
+- A **row** (also called a record) stores the facts for one item or person.
+- A **cell** is one value at the intersection of a row and column.
+
+Example `students` table:
 
 | id | name | city |
 |---:|---|---|
-| 1 | Harsh | Pune |
-| 2 | Ashok | Baroda |
+| 1 | Asha | Pune |
+| 2 | Ravi | Surat |
 
-Each row is one student's record. The `id` distinguishes students even if two people have the same name.
+Here `students` is the table; `id`, `name`, and `city` are columns; each student is a row.
 
-## 3. SQL basics
+## 3. SQL: the database language
 
-**SQL** stands for Structured Query Language. It is the common language used to tell relational databases what data to store and retrieve. The module examples use SQL commands such as `CREATE TABLE`, `INSERT`, `SELECT`, `UPDATE`, and `DELETE`.
+**SQL** means Structured Query Language. SQL is the language we use to describe database work. Python runs the program and sends SQL instructions to the database. The database performs the instruction and sends results back to Python.
 
-### Create a table
+Think of the roles this way:
 
-```sql
-CREATE TABLE students (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT,
-    city TEXT
-)
+```text
+Python program  -- sends SQL -->  Database
+Python program  <-- returns rows -- Database
 ```
 
-This creates a `students` table. `INTEGER` stores whole numbers; `TEXT` stores text. In SQLite, `INTEGER PRIMARY KEY` automatically assigns an ID when one is not supplied. `AUTOINCREMENT` adds the stronger rule that previously used IDs are not reused; it is optional for most beginner tables.
+The SQL examples below appear inside Python strings because Python is sending them to SQLite. SQL keywords such as `SELECT` and `CREATE TABLE` are conventionally written in uppercase for readability, but SQL generally accepts lowercase too.
 
-### Add rows
+## 4. SQLite and Python connection basics
 
-```sql
-INSERT INTO students (name, city)
-VALUES ('Harsh', 'Pune')
-```
-
-The column names say where each value goes. Text values are enclosed in single quotes in SQL.
-
-### Read rows
-
-```sql
-SELECT * FROM students
-```
-
-`SELECT` reads data. `*` means all columns. You can ask for selected columns, too:
-
-```sql
-SELECT name, city FROM students
-```
-
-### Filter rows
-
-```sql
-SELECT * FROM students WHERE city = 'Pune'
-```
-
-`WHERE` keeps rows that meet a condition. Without a `WHERE` condition, an update or delete can affect every row, so take care.
-
-### Change rows
-
-```sql
-UPDATE students SET city = 'Surat' WHERE id = 1
-```
-
-This changes the city only for the row whose ID is 1.
-
-### Delete rows
-
-```sql
-DELETE FROM students WHERE id = 1
-```
-
-This removes that row. A database deletion is not the same as deleting a Python variable; the stored row is removed from the database.
-
-## 4. SQLite: a database in a file
-
-SQLite is included with Python as the `sqlite3` module. It stores the database in a local file and does not require a separate database server. It is convenient for learning and small local applications.
-
-```python
-import sqlite3
-
-connection = sqlite3.connect("school.db")
-```
-
-If `school.db` does not exist, SQLite creates it. If it already exists, SQLite opens it. The path is relative to the program's current working folder unless you give a full path.
-
-## 5. Connections and cursors
-
-A **connection** represents your program's connection to a database. A **cursor** is an object used to send SQL commands and read results. SQLite lets you run commands using either the connection directly or a cursor; using a cursor makes the database steps clear.
-
-```python
-connection = sqlite3.connect("school.db")
-cursor = connection.cursor()
-```
-
-The examples use `db` for the connection and `cr` for a cursor. Variable names can differ; their roles are what matter.
-
-## 6. Creating a table and inserting data in Python
+SQLite is a database system that stores its data in a local file. Python includes the `sqlite3` module, so it is a convenient first database to learn.
 
 ```python
 import sqlite3
 
 connection = sqlite3.connect("school.db")
 cursor = connection.cursor()
+```
 
+- A **connection** represents Python's open link to a database.
+- A **cursor** sends SQL commands and helps retrieve query results.
+- `school.db` is the database file. If it does not exist, SQLite creates it. A relative file path is based on the program's current working directory.
+
+The existing module examples use names such as `db` for a connection and `cr` for a cursor. These are just variable names; their jobs are the same.
+
+## 5. Create a table and understand data types
+
+Before adding rows, create a table and decide what columns it needs. A simple SQLite table might be:
+
+```python
 cursor.execute("""
     CREATE TABLE IF NOT EXISTS students (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
         city TEXT
     )
 """)
-
-cursor.execute(
-    "INSERT INTO students (name, city) VALUES (?, ?)",
-    ("Harsh", "Pune")
-)
-connection.commit()
-connection.close()
 ```
 
-`IF NOT EXISTS` avoids an error if the table is already present. `NOT NULL` means a value must be supplied for that column. `execute()` sends one SQL command. `commit()` saves changes such as table creation, inserts, updates, and deletes. `close()` releases the connection when finished.
+`CREATE TABLE` defines the structure. `IF NOT EXISTS` means “create it if it is not already there.” Common SQLite type names include:
 
-## 7. Use placeholders for values
+- `INTEGER`: whole numbers, such as an ID or count.
+- `REAL`: numbers that may have a decimal part.
+- `TEXT`: words or other text.
+- `BLOB`: binary data such as raw file contents.
+- `NULL`: a missing or unknown value (not the same as zero or empty text).
 
-When a value comes from a user or a variable, do **not** build SQL by joining text together. Use placeholders. In SQLite, the placeholder is `?`:
+SQLite is flexible about types, but choose a type that makes sense for each column. A database's schema is its structure: its tables, columns, and rules.
+
+## 6. Add, read, update, and delete rows
+
+These four operations are often shortened to **CRUD**: Create (rows), Read, Update, Delete. “Create” in CRUD means adding a data row with `INSERT`; this is different from the DDL command `CREATE TABLE`, which creates the table structure.
+
+### Add a row: `INSERT`
+
+```python
+cursor.execute(
+    "INSERT INTO students (name, city) VALUES (?, ?)",
+    ("Asha", "Pune")
+)
+connection.commit()
+```
+
+The column list says where each value goes. The `?` symbols are placeholders for values supplied separately. The final values are a Python tuple. When a tuple has one item, write a trailing comma, as in `("Asha",)`.
+
+### Read rows: `SELECT`
+
+```python
+cursor.execute("SELECT id, name, city FROM students")
+rows = cursor.fetchall()
+
+for row in rows:
+    print(row)
+```
+
+`SELECT` reads data. `*` means all columns, though listing the columns you need is often clearer:
+
+```python
+cursor.execute("SELECT name, city FROM students")
+```
+
+To filter rows, use `WHERE`:
+
+```python
+cursor.execute("SELECT id, name FROM students WHERE city = ?", ("Pune",))
+print(cursor.fetchall())
+```
+
+`fetchone()` reads one result row, `fetchmany(n)` reads up to `n` rows, and `fetchall()` reads all remaining result rows. SQLite rows commonly arrive as tuples. Python's `None` represents SQL `NULL`.
+
+### Change a row: `UPDATE`
+
+```python
+cursor.execute(
+    "UPDATE students SET city = ? WHERE id = ?",
+    ("Surat", 1)
+)
+connection.commit()
+```
+
+`SET` names the value to change, and `WHERE` selects which row. Without `WHERE`, every row in the table may be updated.
+
+### Remove a row: `DELETE`
+
+```python
+cursor.execute("DELETE FROM students WHERE id = ?", (1,))
+connection.commit()
+```
+
+This removes the row with ID 1. Without `WHERE`, all rows may be deleted. The table itself remains.
+
+## 7. Placeholders: pass values safely
+
+Always use placeholders when values come from a variable, user input, or another source. For SQLite, the placeholder is `?`:
 
 ```python
 name = input("Student name: ")
@@ -149,196 +172,103 @@ cursor.execute(
 connection.commit()
 ```
 
-The database safely treats the supplied values as data. Building SQL directly from user input can cause errors and can create a security problem called **SQL injection**. Database libraries use different placeholder styles; for example, PyMySQL commonly uses `%s`. Follow the library's documentation and use its parameter feature.
+Do not build the SQL by inserting user input into an f-string. That can break when text contains quotes and may allow **SQL injection**, where input is treated as part of a command. Placeholders tell the database that the supplied values are data. PyMySQL commonly uses `%s` placeholders instead; use the placeholder style required by the database library.
 
-## 8. Read query results
+## 8. Save and undo changes: transactions
 
-Run a `SELECT` command, then fetch the result rows:
-
-```python
-cursor.execute("SELECT id, name, city FROM students")
-rows = cursor.fetchall()
-
-for row in rows:
-    print(row)
-```
-
-Each row is usually returned as a tuple, for example `(1, 'Harsh', 'Pune')`.
-
-- `fetchone()` gets the next single row, or `None` if there are no more rows.
-- `fetchmany(2)` gets up to two rows.
-- `fetchall()` gets all remaining rows as a list.
-
-The module's `dbapp.py` demonstrates selecting records and looping over `fetchall()` results.
-
-## 9. Save changes with `commit()`
-
-Many database changes are part of a **transaction**. A transaction groups changes so they can be saved together. Call `commit()` when you want the changes to persist. If you close a connection without committing, pending changes may not be saved.
+A **transaction** is a group of database changes treated as one unit. `commit()` saves pending changes. `rollback()` cancels pending changes that have not been committed.
 
 ```python
-cursor.execute("UPDATE students SET city = ? WHERE id = ?", ("Surat", 1))
-connection.commit()
-```
-
-For more advanced programs, a failed group of changes can be undone with `rollback()` before closing or continuing.
-
-## 10. Handling database errors and cleaning up
-
-Database operations can fail: a table may already exist, the database file may not be writable, or a query may have a typo. Use `try`/`except` when you can respond usefully to an error, and make sure the connection is closed.
-
-```python
-import sqlite3
-
-connection = sqlite3.connect("school.db")
 try:
-    cursor = connection.cursor()
-    cursor.execute("SELECT name FROM students")
-    for row in cursor.fetchall():
-        print(row[0])
-finally:
-    connection.close()
+    cursor.execute("INSERT INTO students (name, city) VALUES (?, ?)", ("Mina", "Rajkot"))
+    connection.commit()
+except sqlite3.Error:
+    connection.rollback()
+    raise
 ```
 
-Python's `with` statement can also manage SQLite connections. In production code, handle expected exceptions thoughtfully rather than hiding all errors with an empty or overly broad `except` block.
+For example, transferring money between two accounts involves taking money from one and adding it to another. Both changes should succeed together, or neither should be kept. Transactions help maintain this kind of consistency.
 
-## 11. SQLite and MySQL
-
-The module includes both `sqlite3` and PyMySQL examples. SQLite uses a local database file. MySQL is a database server, usually running separately, and requires connection settings such as host, username, password, and database name. PyMySQL is an extra Python package, so it must be installed before the import works.
-
-The SQL ideas are similar, but details such as data types, automatic IDs, connection setup, and parameter placeholders can differ between database systems. In `dbapp_mysqlapp.py`, the code connects to a MySQL server at `localhost`; that example only runs if the server, database, credentials, and PyMySQL package are set up correctly.
-
-## 12. Understanding this module's examples
-
-- `dbapp.py` and `dbapp_sqlite.py` connect to SQLite, create a table, insert rows, and read rows. The commented sections show update and delete queries.
-- `dbapp_sqlite.py` opens `my_database.db`, which is a database file in this module folder.
-- `dbapp_mysqlapp.py` shows a MySQL connection using PyMySQL. It assumes a local MySQL server and a database named `python` already exist.
-
-Repeated runs may encounter “table already exists” or add duplicate rows because the sample statements create and insert data each time. For learning, inspect the database state and understand each statement before rerunning it. `CREATE TABLE IF NOT EXISTS` helps with the table-creation case; unique keys or deliberate cleanup help avoid duplicate sample data.
-
-## 13. A good database workflow
-
-1. Connect to the database.
-2. Create a cursor if needed.
-3. Execute SQL using placeholders for values.
-4. Fetch results for `SELECT` queries.
-5. Commit changes that should be saved.
-6. Close the connection.
-
-## Practice ideas
-
-1. Create a `books` table with `id`, `title`, and `author` columns.
-2. Insert two books using placeholders.
-3. Select and print all books.
-4. Select only books by one author using `WHERE`.
-5. Update one book by its ID, then commit.
-6. Delete one book by its ID, then confirm the remaining rows.
-
----
-
-# Database Fundamentals for Complete Beginners
-
-The rest of these notes builds the ideas behind databases in more detail. Every database command below is sent from Python using `sqlite3`, so students can see how Python and SQL work together.
-
-## 14. What problem does a database solve?
-
-Imagine a school program that stores student names in a Python list:
-
-```python
-students = ["Asha", "Ravi"]
-```
-
-This works while the program is running, but the list is normally lost when Python stops. We could write information to a text file, but then we would need to invent how to search, update, avoid duplicates, and connect related records. A database provides a reliable structure and a language for those jobs.
-
-Think of a database as a well-organized digital filing cabinet. It contains **tables**. A table is similar to a spreadsheet: columns describe what facts are stored, and rows hold facts about individual things. Unlike a simple spreadsheet, a relational database can enforce rules and connect tables using keys.
-
-## 15. Plan a small database before writing code
-
-Suppose a school needs to record students and the courses they take. Start by identifying the kinds of things to store:
-
-- Student information belongs in a `students` table.
-- Course information belongs in a `courses` table.
-- The fact that a particular student takes a particular course belongs in an enrollment table.
-
-This separation prevents us from repeatedly typing a student's details every time we record a course. It also makes updates safer: a student's name is stored in one place.
-
-## 16. Keys: how tables identify and connect rows
+## 9. Keys: identify rows and connect tables
 
 ### Primary key
 
-A **primary key** is the chosen column (or set of columns) that uniquely identifies each row in a table. A primary key cannot be missing and cannot repeat. It is like a unique library card number: two people may share a name, but they should not share the same student ID.
+A **primary key** uniquely identifies each row in a table. It must not be missing or duplicated. A person's name is a poor key because two people may share a name or a person may change their name. An ID is a better key.
 
 ```sql
 id INTEGER PRIMARY KEY
 ```
 
-In SQLite, an `INTEGER PRIMARY KEY` is assigned an integer ID when the inserted row does not supply one. `AUTOINCREMENT` can request that SQLite never reuse previously used row IDs, but most simple SQLite tables only need `INTEGER PRIMARY KEY`.
+In SQLite, an `INTEGER PRIMARY KEY` is assigned an ID when one is not supplied. `AUTOINCREMENT` adds a stronger rule that an old ID will not be reused, but it is usually unnecessary in beginner examples.
 
 ### Foreign key
 
-A **foreign key** is a column in one table whose value refers to a primary key in another table. It creates a valid link between rows. For example, `enrollments.student_id` refers to `students.id`. A foreign key helps prevent an enrollment for a student who does not exist.
+A **foreign key** stores a reference to a row in another table. If an order belongs to a customer, the `orders` table can have a `customer_id` column that refers to `customers.id`.
 
 ```sql
-student_id INTEGER NOT NULL,
-FOREIGN KEY (student_id) REFERENCES students(id)
+customer_id INTEGER NOT NULL,
+FOREIGN KEY (customer_id) REFERENCES customers(id)
 ```
 
-The foreign key is stored in the table that needs to refer to the other table. The student's primary key is not copied as a new identity; its value is referenced.
+This gives the database a way to check that the referenced customer exists. SQLite foreign key checking should be enabled for each connection with:
 
-### Other useful constraints
+```python
+connection.execute("PRAGMA foreign_keys = ON")
+```
 
-Constraints are rules the database enforces when data is stored:
+### Other database rules (constraints)
 
-- `NOT NULL`: a value is required.
-- `UNIQUE`: no two rows may have the same value in this column (for example, an email address).
-- `CHECK`: a value must pass a condition (for example, age must be at least zero).
-- `DEFAULT`: use a value when none is provided.
-- `PRIMARY KEY`: uniquely identifies a row.
-- `FOREIGN KEY`: requires a reference to a valid row in another table.
+Constraints are rules the database checks when data is inserted or changed:
 
-The Python program can validate input too, but database constraints are an important second layer of protection. They still apply if another program writes to the same database.
+- `NOT NULL`: this column must have a value.
+- `UNIQUE`: values in this column must not repeat, such as an email address.
+- `CHECK`: a value must pass a condition, such as `grade BETWEEN 0 AND 100`.
+- `DEFAULT`: use a value when no value is supplied.
+- `PRIMARY KEY`: this row's unique identity.
+- `FOREIGN KEY`: this reference must point to a valid row.
 
-## 17. Relationships between tables
+Python can also validate input, but database constraints protect the data even if it is changed by a different program.
 
-Tables can be related in three common ways:
+## 10. Relationships: one-to-one, one-to-many, many-to-many
 
-1. **One-to-one:** one row in table A relates to at most one row in table B. Example: one person and one passport record.
-2. **One-to-many:** one row in table A can relate to many rows in table B, but each B row belongs to one A row. Example: one customer can have many orders. Put the customer's foreign key in the `orders` table.
-3. **Many-to-many:** many rows in table A can relate to many rows in table B. Example: each student can take many courses, and each course can have many students.
+- **One-to-one:** one row in the first table is associated with at most one row in the second. Example: a person and a passport record.
+- **One-to-many:** one row in the first table may be associated with many rows in the second. Example: one customer can have many orders. Put the customer's foreign key in `orders`.
+- **Many-to-many:** many rows in the first table can relate to many rows in the second. Example: one student takes many courses, and one course has many students.
 
-A relational database does not normally store a list of course IDs in one student cell. To represent a many-to-many relationship, create a third table called a **junction table**, **link table**, or **join table**.
+The many-to-many relationship needs a third table to record each pairing.
 
-## 18. What is a join table?
+## 11. What is a join table?
 
-In the school example, the `enrollments` table connects students and courses:
+A **join table** (also called a junction table or link table) stores links between rows in two other tables. It is a real table that holds data. This is different from a `JOIN` query, which is an instruction for combining related rows in a result.
+
+For students and courses, we can use:
 
 ```text
-students                 courses                 enrollments
-+----+------+             +----+---------+         +------------+-----------+
-| id | name |             | id | title   |         | student_id | course_id|
-+----+------+             +----+---------+         +------------+-----------+
-| 1  | Asha |             | 10 | Python  |         | 1          | 10       |
-| 2  | Ravi |             | 11 | Databases|        | 1          | 11       |
-+----+------+             +----+---------+         | 2          | 10       |
+students                courses                  enrollments
++----+------+            +----+----------+         +------------+-----------+
+| id | name |            | id | title    |         | student_id | course_id |
++----+------+            +----+----------+         +------------+-----------+
+| 1  | Asha |            | 10 | Python   |         | 1          | 10        |
+| 2  | Ravi |            | 11 | Databases|         | 1          | 11        |
++----+------+            +----+----------+         | 2          | 10        |
                                                    +------------+-----------+
 ```
 
-Each enrollment row means “this student takes this course.” The pair `(student_id, course_id)` should usually be unique, because the same student should not be enrolled in the same course twice. The pair can itself be the table's **composite primary key** (a key made from more than one column).
+Each row in `enrollments` means “this student takes this course.” The pair `(student_id, course_id)` should usually be unique, so the same student cannot be enrolled in the same course twice. This pair can be a **composite primary key**: a primary key made from more than one column. Details such as grade or enrollment date belong in this join table because they describe the student's enrollment in that course.
 
-The join table can also store facts about the relationship, such as `enrolled_on`, `grade`, or `status`. Those facts belong to the enrollment, not solely to the student or course.
+## 12. Build the example database in Python
 
-## 19. Create and fill related tables using Python
-
-This complete example uses an in-memory SQLite database. `:memory:` means the database exists only while this program runs, so it will not change the module's existing database file. SQLite foreign-key enforcement is switched on explicitly for this connection.
+This complete example creates three related tables, adds sample data, and saves it in `school.db`. Run it as one program. The `IF NOT EXISTS` clauses make table creation safe to repeat; the sample inserts will still add duplicate names if the program is run repeatedly.
 
 ```python
 import sqlite3
 
-connection = sqlite3.connect(":memory:")
+connection = sqlite3.connect("school.db")
 connection.execute("PRAGMA foreign_keys = ON")
 cursor = connection.cursor()
 
 cursor.execute("""
-    CREATE TABLE students (
+    CREATE TABLE IF NOT EXISTS students (
         id INTEGER PRIMARY KEY,
         name TEXT NOT NULL,
         email TEXT UNIQUE
@@ -346,14 +276,14 @@ cursor.execute("""
 """)
 
 cursor.execute("""
-    CREATE TABLE courses (
+    CREATE TABLE IF NOT EXISTS courses (
         id INTEGER PRIMARY KEY,
         title TEXT NOT NULL UNIQUE
     )
 """)
 
 cursor.execute("""
-    CREATE TABLE enrollments (
+    CREATE TABLE IF NOT EXISTS enrollments (
         student_id INTEGER NOT NULL,
         course_id INTEGER NOT NULL,
         grade INTEGER CHECK (grade BETWEEN 0 AND 100),
@@ -364,38 +294,48 @@ cursor.execute("""
 """)
 
 cursor.execute(
-    "INSERT INTO students (name, email) VALUES (?, ?)",
+    "INSERT OR IGNORE INTO students (name, email) VALUES (?, ?)",
     ("Asha", "asha@example.com")
 )
 cursor.execute(
-    "INSERT INTO students (name, email) VALUES (?, ?)",
+    "INSERT OR IGNORE INTO students (name, email) VALUES (?, ?)",
     ("Ravi", "ravi@example.com")
 )
-cursor.execute("INSERT INTO courses (title) VALUES (?)", ("Python",))
-cursor.execute("INSERT INTO courses (title) VALUES (?)", ("Databases",))
+cursor.execute("INSERT OR IGNORE INTO courses (title) VALUES (?)", ("Python",))
+cursor.execute("INSERT OR IGNORE INTO courses (title) VALUES (?)", ("Databases",))
 
-# Look up IDs by their meaningful values so this example does not assume ID numbers.
 asha_id = cursor.execute(
-    "SELECT id FROM students WHERE name = ?", ("Asha",)
+    "SELECT id FROM students WHERE email = ?", ("asha@example.com",)
 ).fetchone()[0]
 python_id = cursor.execute(
     "SELECT id FROM courses WHERE title = ?", ("Python",)
 ).fetchone()[0]
 
 cursor.execute(
-    "INSERT INTO enrollments (student_id, course_id, grade) VALUES (?, ?, ?)",
+    "INSERT OR IGNORE INTO enrollments (student_id, course_id, grade) VALUES (?, ?, ?)",
     (asha_id, python_id, 95)
 )
 connection.commit()
+connection.close()
 ```
 
-Notice `( "Python", )` is a one-value tuple: a one-value tuple needs a comma in Python. Without the comma, parentheses only group the value and do not make a tuple.
+Important details:
 
-## 20. What does JOIN mean?
+- Tables that are referenced by foreign keys (`students`, `courses`) are created before `enrollments`.
+- The database gives IDs to students and courses. The program looks them up instead of assuming what numbers SQLite assigned.
+- `INSERT OR IGNORE` skips a row if it violates a uniqueness rule. It is a simple way to make this sample rerunnable; in real programs, handle duplicates deliberately.
+- `connection.close()` closes the database connection.
 
-The `JOIN` keyword asks the database to combine rows from related tables. The connection is usually stated with `ON`, which explains which key columns must match. Here Python runs a query that returns each student's name, course title, and grade:
+## 13. What does a JOIN query do?
+
+A `JOIN` query combines related rows from tables for a result. It does not permanently merge or change the tables. The `ON` part tells the database which key values must match.
 
 ```python
+import sqlite3
+
+connection = sqlite3.connect("school.db")
+cursor = connection.cursor()
+
 cursor.execute("""
     SELECT students.name, courses.title, enrollments.grade
     FROM enrollments
@@ -403,19 +343,20 @@ cursor.execute("""
     JOIN courses ON enrollments.course_id = courses.id
 """)
 
-for name, course_title, grade in cursor.fetchall():
-    print(name, course_title, grade)
+for name, course, grade in cursor.fetchall():
+    print(name, course, grade)
+
+connection.close()
 ```
 
-Read this query in plain language: start with enrollment records, find the student whose ID matches each enrollment's `student_id`, then find the course whose ID matches its `course_id`, and show the requested columns.
+In plain language: start with each enrollment, find the matching student using `student_id`, find the matching course using `course_id`, then show the student's name, course title, and grade.
 
 ### Common join types
 
-- `INNER JOIN` (written `JOIN` in SQLite): return rows with matching records on both sides. An enrollment appears only if its student and course match.
-- `LEFT JOIN`: keep every row from the left table, even if there is no match on the right. The right-side columns are `None`/`NULL` when there is no match.
-- `RIGHT JOIN` and `FULL OUTER JOIN`: available in some database systems and SQLite versions; beginner examples can start with `JOIN` and `LEFT JOIN`.
+- `INNER JOIN` (or simply `JOIN`): return rows where a match exists in both tables.
+- `LEFT JOIN`: keep every row from the table on the left, even when there is no matching row on the right. Missing right-side values appear as SQL `NULL` and Python `None`.
 
-Example: list all students, including students who have not enrolled in a course:
+To list all students, including those with no course enrollment, use left joins:
 
 ```python
 cursor.execute("""
@@ -428,23 +369,17 @@ for row in cursor.fetchall():
     print(row)
 ```
 
-`None` in a returned Python row corresponds to SQL `NULL`, meaning no value/matching course was found. A join combines information for a result; it does not permanently merge or change the tables.
+## 14. SQL command families: DDL, DML, DQL, and TCL
 
-## 21. SQL command families: DDL, DML, DQL, and TCL
-
-SQL commands are often taught in groups based on their job. These names describe the kind of SQL instruction. Python still sends each command as a string using `execute()`.
+These names group SQL commands by their purpose. Python sends the SQL text using `cursor.execute()`. In Python's SQLite API, transaction actions are often performed with `connection.commit()` and `connection.rollback()`.
 
 ### DDL — Data Definition Language
 
-DDL defines or changes the **structure** of a database: tables, columns, and other objects.
+DDL defines or changes the database **structure**, such as tables and columns.
 
-Common commands:
-
-- `CREATE`: make a table or other database object.
-- `ALTER`: change the structure of an existing object.
-- `DROP`: remove a database object, such as a table.
-
-Python example:
+- `CREATE`: make a table.
+- `ALTER`: change a table's structure.
+- `DROP`: remove a table or other object.
 
 ```python
 cursor.execute("""
@@ -457,10 +392,10 @@ cursor.execute("""
 
 ### DML — Data Manipulation Language
 
-DML changes the **rows/data inside tables**.
+DML adds, changes, or removes **rows** in a table.
 
 - `INSERT`: add rows.
-- `UPDATE`: change existing rows.
+- `UPDATE`: change rows.
 - `DELETE`: remove rows.
 
 ```python
@@ -470,123 +405,123 @@ cursor.execute("DELETE FROM clubs WHERE id = ?", (1,))
 connection.commit()
 ```
 
-Always think about the `WHERE` clause before `UPDATE` and `DELETE`. Without `WHERE`, every row may be changed or removed.
+Always check the `WHERE` condition on `UPDATE` and `DELETE`. Without it, all rows can be changed or removed.
 
 ### DQL — Data Query Language
 
-DQL retrieves/asks questions about data. The main command is `SELECT`.
+DQL asks for/read data. `SELECT` is the main DQL command.
 
 ```python
 cursor.execute("SELECT id, name FROM students WHERE name = ?", ("Asha",))
 rows = cursor.fetchall()
 ```
 
-`SELECT` does not ordinarily change table data. It returns results for Python to inspect.
+`SELECT` returns results; it does not ordinarily change table data.
 
 ### TCL — Transaction Control Language
 
-TCL controls a **transaction**, which is a group of database changes treated as one unit.
+TCL controls whether a group of changes is saved or undone.
 
-- `COMMIT`: make the transaction's changes permanent.
-- `ROLLBACK`: undo the transaction's uncommitted changes.
-- `SAVEPOINT`: mark a point inside a transaction to which you may roll back.
+- `COMMIT`: save the transaction.
+- `ROLLBACK`: undo uncommitted changes.
+- `SAVEPOINT`: mark a point to which part of a transaction can be undone.
 
-In Python's `sqlite3`, you will commonly call methods instead of writing these words as query strings:
+In Python with SQLite:
 
 ```python
-try:
-    cursor.execute("INSERT INTO clubs (name) VALUES (?)", ("Music",))
-    connection.commit()  # save the transaction
-except sqlite3.Error:
-    connection.rollback()  # undo uncommitted changes if there was an error
-    raise
+connection.commit()    # save pending changes
+connection.rollback()  # undo pending changes
 ```
 
-Some textbooks also teach **DCL** (Data Control Language), such as `GRANT` and `REVOKE`, for permissions. Permission commands vary by database; SQLite does not use the same database-user permission system as a server such as MySQL.
+Some database textbooks also include **DCL** (Data Control Language), such as `GRANT` and `REVOKE`, for database permissions. Permission features vary by database system; SQLite does not manage users and permissions like a server database such as MySQL.
 
-### Simple difference to remember
-
-| Family | Main question | Example command |
+| Family | What it is for | Example |
 |---|---|---|
-| DDL | What should the database structure look like? | `CREATE TABLE` |
-| DML | How should stored rows change? | `INSERT`, `UPDATE`, `DELETE` |
-| DQL | What stored information do I want to see? | `SELECT` |
-| TCL | Should this group of changes be saved or undone? | `commit()`, `rollback()` |
+| DDL | Define database structure | `CREATE TABLE` |
+| DML | Change table rows | `INSERT`, `UPDATE`, `DELETE` |
+| DQL | Read/query table rows | `SELECT` |
+| TCL | Save or undo a group of changes | `commit()`, `rollback()` |
 
-## 22. SQL rules students should remember
+## 15. Important database rules
 
-1. **A table should represent one kind of thing.** Keep student details in `students`, course details in `courses`, and enrollment facts in `enrollments`.
-2. **Give each table a primary key.** Use it to identify a row reliably; names may repeat or change.
-3. **Use foreign keys for references.** Do not rely on matching names to connect records; names can be misspelled or duplicated.
-4. **Use the correct data type.** Store counts as numbers and names as text. SQLite is flexible with types, but choosing sensible types still helps.
-5. **Add constraints for important rules.** For example, a required name can use `NOT NULL`, and a unique email can use `UNIQUE`.
-6. **Use placeholders for values.** In SQLite use `?`; never paste user input into the SQL string.
-7. **Use `WHERE` to target changes.** Check the condition carefully before updating or deleting.
-8. **Commit changes you want to keep.** Use rollback when a transaction fails and its changes should be undone.
-9. **Fetch results after `SELECT`.** `execute()` runs the query; `fetchone()`/`fetchall()` obtains its rows.
-10. **Close the connection when finished.** This releases resources. Python's `with` and `try/finally` help manage cleanup.
-11. **Do not store a comma-separated list in one cell when each item needs its own relationship.** Use another table and a join table when appropriate.
-12. **Avoid duplicate facts.** If the same fact is copied to many rows, changing it everywhere becomes difficult. Separate tables and keys help reduce that problem.
+1. Use one table for one kind of thing: students, courses, orders, and products are different kinds of things.
+2. Give each table a primary key so every row has a dependable identity.
+3. Use foreign keys to connect rows; do not connect records by names that can repeat or change.
+4. Store one value per cell. For example, do not store `"Python, Math, Art"` in one course column if the courses must be searched and related individually.
+5. Choose suitable data types and add constraints for essential rules.
+6. Use placeholders (`?` in SQLite) for values, especially user input.
+7. Include a carefully chosen `WHERE` clause when changing or deleting particular rows.
+8. Commit changes that should be saved. Roll back a transaction when failed changes should be undone.
+9. Fetch query results after `SELECT`; `execute()` runs the query but does not print the rows.
+10. Close the connection when finished. `with` statements or `try/finally` can help manage cleanup.
+11. Use a join table for a many-to-many relationship.
+12. Avoid storing the same fact in many places. If a student's name changes, it is easier to update it once in `students` than in every enrollment.
 
-## 23. Database NULL is not the same as zero or empty text
+## 16. NULL, zero, empty text, and Python None
 
-SQL `NULL` means a value is missing or unknown. It is different from `0`, `""` (an empty string), and Python `None`. To check for missing values in SQL, use `IS NULL`, not `= NULL`:
+SQL `NULL` means a value is missing or unknown. It is not the number `0` and not the empty string `""`. Python's `sqlite3` converts SQL `NULL` to Python `None` when returning data.
+
+Check for missing database values with `IS NULL`, not `= NULL`:
 
 ```python
 cursor.execute("SELECT name FROM students WHERE email IS NULL")
 print(cursor.fetchall())
 ```
 
-When SQLite returns a `NULL` value to Python, it becomes `None`.
+## 17. SQLite compared with MySQL
 
-## 24. A compact Python database pattern
+SQLite stores a database in a local file and is included with Python. MySQL is a database server that must be installed and running; a program connects using a host, username, password, and database name. The module's `dbapp_mysqlapp.py` uses the extra PyMySQL package and assumes a local MySQL server plus a database named `python` already exist.
 
-This shows the overall shape of a small SQLite program. It assumes the `students` table already exists:
+The core SQL ideas are similar, but connection setup, data types, automatic ID syntax, and placeholder styles can differ. SQLite uses `?` placeholders; PyMySQL commonly uses `%s`. Use the syntax and parameter style for the database library in use.
 
-```python
-import sqlite3
+## 18. Understanding the existing Module 8 files
 
-with sqlite3.connect("school.db") as connection:
-    connection.execute("PRAGMA foreign_keys = ON")
-    cursor = connection.cursor()
+- `dbapp.py` and `dbapp_sqlite.py` connect to SQLite, create a table, insert rows, and read rows. Commented sections demonstrate update and delete queries.
+- `dbapp_sqlite.py` connects to `my_database.db` in the module folder.
+- `dbapp_mysqlapp.py` shows a MySQL connection through PyMySQL. It needs the MySQL server, credentials, database, and package to be configured.
 
-    cursor.execute(
-        "INSERT INTO students (name, city) VALUES (?, ?)",
-        ("Mina", "Surat")
-    )
+Running the original examples repeatedly can add duplicate rows or produce a “table already exists” message because they repeat table creation and inserts. `CREATE TABLE IF NOT EXISTS` prevents the table-creation error; a `UNIQUE` rule or deliberate duplicate handling can prevent repeated sample records.
 
-    cursor.execute("SELECT id, name, city FROM students WHERE city = ?", ("Surat",))
-    for student_id, name, city in cursor.fetchall():
-        print(student_id, name, city)
-```
+## 19. Common beginner mistakes
 
-For SQLite, leaving the `with` block commits on success and rolls back an active transaction if an exception occurs. The connection is then closed. `with` does not suppress the error; an exception still propagates unless you catch it.
+- Forgetting `commit()` after inserts, updates, or deletes.
+- Expecting `execute()` to display query results instead of calling `fetchone()` or `fetchall()`.
+- Forgetting `WHERE` and accidentally changing or deleting every row.
+- Putting values into SQL with f-strings instead of placeholders.
+- Joining tables using names instead of primary and foreign keys.
+- Confusing a **join table** (a stored table linking rows) with a **JOIN query** (a command that combines related rows in a result).
+- Expecting SQLite foreign keys to be enforced without enabling `PRAGMA foreign_keys = ON` for the connection.
+- Assuming sample insert statements will not add duplicates when run a second time.
 
-## 25. Common beginner mistakes
+## 20. A good workflow
 
-- **Using `execute()` but forgetting `commit()`:** changes may not be saved.
-- **Using `"w"`-style thinking for a database:** inserting the same sample rows again adds more rows unless a rule prevents duplicates.
-- **Using a table name or column name that does not exist:** the database reports an SQL error; check spelling and table creation order.
-- **Putting values directly into SQL with f-strings:** this can break on quotes and is unsafe. Use placeholders.
-- **Forgetting `WHERE`:** an update/delete can affect all rows.
-- **Expecting `execute(SELECT...)` to print results:** fetch the rows and print them in Python.
-- **Trying to join tables on a person's name:** use primary/foreign keys instead.
-- **Expecting foreign keys to be enforced automatically in every SQLite connection:** enable them with `PRAGMA foreign_keys = ON` for each connection.
-- **Confusing a join table with the `JOIN` query:** the join table is a stored table connecting many-to-many rows; `JOIN` is a query operation that combines related rows in the result.
+1. Connect to the database.
+2. Enable SQLite foreign keys if the schema uses them.
+3. Create the tables in an order that respects their references.
+4. Execute SQL with placeholders for values.
+5. Fetch rows when using `SELECT`.
+6. Commit successful changes or roll back failed transactions.
+7. Close the connection.
 
-## 26. Mini glossary
+## Practice
 
-- **Database:** organized persistent storage for information.
-- **Relational database:** a database that stores related data in tables.
-- **SQL:** language used to define, change, and query database data.
-- **Primary key:** unique identity of a row.
-- **Foreign key:** reference from a row to a key in another table.
-- **Constraint:** a rule that data must obey.
-- **Join table:** table that records links between two tables, especially for a many-to-many relationship.
-- **JOIN query:** SQL operation that combines matching rows from tables.
-- **Transaction:** a group of database changes saved or undone together.
-- **Commit:** save pending transaction changes.
-- **Rollback:** undo pending transaction changes.
-- **Cursor:** Python object used to execute SQL and fetch query results.
-- **Placeholder:** marker (`?` in SQLite) where a value is safely supplied separately.
+1. Create a `books` table with an ID, title, and author.
+2. Insert two books with placeholders and print them using `SELECT`.
+3. Add a `readers` table and a `loans` join table. What are their primary and foreign keys?
+4. Write a `JOIN` query that displays each reader and the title of each borrowed book.
+5. Classify `CREATE TABLE`, `INSERT`, `SELECT`, `UPDATE`, `DELETE`, and `commit()` as DDL, DML, DQL, or TCL.
+6. Add a `CHECK` constraint so a book's rating must be from 1 through 5.
 
+## Quick glossary
+
+- **Database:** organized, persistent storage for information.
+- **SQL:** language used to define, change, and query relational databases.
+- **Schema:** the database's tables, columns, and rules.
+- **Primary key:** unique identity of a table row.
+- **Foreign key:** a reference to a key in another table.
+- **Constraint:** a rule the database enforces on stored values.
+- **Join table:** a table that records links in a many-to-many relationship.
+- **JOIN query:** an instruction to combine related rows in query results.
+- **Transaction:** a group of changes that can be saved or undone together.
+- **Cursor:** Python object used to send SQL and fetch query results.
+- **Placeholder:** marker (`?` in SQLite) for a value supplied separately.
