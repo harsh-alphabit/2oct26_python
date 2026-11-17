@@ -1,0 +1,35 @@
+Step1: Activate your env.
+myenv\Script\activate
+
+Step2: Create a Django Project
+django-admin startproject projName
+
+Step3: Select your project folder in CMD
+cd ProjFolder
+
+Step4: Open your project folder in VS Code
+code .
+
+Step5: Migrate your database
+python manage.py migrate
+
+Step6: Test your server (for output)
+python manage.py runserver
+
+Step7: Create a Admin user (superuser)
+python manage.py createsuperuser
+
+Step8: Create your App
+python manage.py startapp appname
+
+Step9: Register your app in settings.py
+Inside  - INSTALLED_APPS
+
+Step10: Create a "templates" folder inside your app folder.
+
+Step11: Create your first .html file inside templates folder.
+
+Step12: Go to views file, and create a view(function) for your templates.
+
+Step13: Go to urls.py, and Create a URL(path) for your view.
+
