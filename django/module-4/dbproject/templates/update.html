@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Student</title>
+</head>
+
+<body bgcolor="lightblue">
+    <h1>Update Form</h1>
+    <hr>
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="Name" value="{{data.name}}"><br><br>
+        <input type="email" name="email" placeholder="Email" value="{{data.email}}"><br><br>
+        <input type="password" name="password" placeholder="Password" value="{{data.password}}"><br><br>
+        <input type="number" name="mobile" placeholder="Mobile" value="{{data.mobile}}"><br><br>
+        <textarea name="address" placeholder="Address">{{data.address}}</textarea><br><br>
+        <input type="submit" value="Update">
+        <a href="{% url 'dbdata' %}">Cancel</a>
+    </form>
+</body>
+
+</html>
