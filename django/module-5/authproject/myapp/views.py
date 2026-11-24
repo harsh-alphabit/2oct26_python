@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from myapp.forms import UserForm
 from myapp.models import User
+from django.contrib.auth import logout
 
 # Create your views here.
 def index(request):
@@ -32,6 +33,8 @@ def usersignup(request):
 
 def home(request):
     user = request.session.get('username')  #session get
-
-
     return render(request, 'home.html', {'user': user} )
+
+def userlogout(request): 
+    logout(request)  #session delete
+    return redirect('/')
