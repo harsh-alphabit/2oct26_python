@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Quotation Bill - Startup{% endblock %}
+
+{% block page_header %}
+<div class="container-fluid bg-primary py-5 bg-header">
+    <div class="row py-5"><div class="col-12 pt-lg-5 mt-lg-5 text-center"><h1 class="text-white">Quotation Bill</h1></div></div>
+</div>
+{% endblock %}
+
+{% block content %}
+<style>
+@media print {
+    body > *:not(.quote-print) { display: none !important; }
+    .quote-print .no-print { display: none !important; }
+}
+</style>
+<div class="container py-5 quote-print" style="max-width: 800px;">
+    <div class="border rounded p-4">
+        <h2>Startup Quotation #{{ quote_request.id }}</h2>
+        <p>Date: {{ quote_request.created_at|date:'d M Y' }}</p>
+        <p>Customer: {{ quote_request.name }}<br>Email: {{ quote_request.email }}<br>Service: {{ quote_request.service }}</p>
+        <p><strong>Status:</strong> {{ quote_request.status }}</p>
+        {% if items %}
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead><tr><th>Selected work</th><th class="text-end">Price</th></tr></thead>
+                <tbody>
+                    {% for label, price in items %}
+                    <tr><td>{{ label }}</td><td class="text-end">₹{{ price }}</td></tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot><tr><th>Total estimated price</th><th class="text-end">₹{{ quote_request.total_price }}</th></tr></tfoot>
+            </table>
+        </div>
+        {% else %}<p>This older quotation has no priced features.</p>{% endif %}
+        {% if quote_request.message %}<p><strong>Extra details:</strong> {{ quote_request.message }}</p>{% endif %}
+        <p class="small">Sample estimate for classroom practice. No payment has been made.</p>
+        <div class="no-print">
+            <a href="{% url 'dashboard' %}" class="btn btn-primary">My Quotations</a>
+            {% if items %}<a href="{% url 'edit_quote' quote_request.id %}" class="btn btn-outline-dark">Edit</a>{% endif %}
+            <button type="button" onclick="window.print()" class="btn btn-outline-dark">Print Bill</button>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ service.name }} Quotation - Startup{% endblock %}
+
+{% block page_header %}
+<div class="container-fluid bg-primary py-5 bg-header">
+    <div class="row py-5"><div class="col-12 pt-lg-5 mt-lg-5 text-center"><h1 class="text-white">{{ service.name }}</h1></div></div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 750px;">
+    <h2>{% if editing %}Edit quotation{% else %}Build your quotation{% endif %}</h2>
+    <p>Choose the work you need. Prices are sample amounts in rupees.</p>
+    {% if error %}<p class="text-danger" role="alert">{{ error }}</p>{% endif %}
+    <form method="post">
+        {% csrf_token %}
+        {% for code, label, price in service.features %}
+        <label class="d-flex align-items-center justify-content-between border rounded p-3 mb-2">
+            <span><input type="checkbox" name="features" value="{{ code }}" class="form-check-input me-2" {% if code in selected %}checked{% endif %}>{{ label }}</span>
+            <strong>₹{{ price }}</strong>
+        </label>
+        {% endfor %}
+        <label for="message" class="form-label mt-3">Extra details (optional)</label>
+        <textarea id="message" name="message" rows="3" class="form-control mb-3" maxlength="2000">{{ message }}</textarea>
+        <button type="submit" class="btn btn-primary">{% if editing %}Update Quotation{% else %}Generate Quotation{% endif %}</button>
+        <a href="{% url 'quote' %}" class="btn btn-outline-dark">Back to Services</a>
+    </form>
+</div>
+{% endblock %}

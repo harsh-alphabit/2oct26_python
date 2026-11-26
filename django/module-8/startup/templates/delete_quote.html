@@ -1,0 +1,25 @@
+{% extends 'base.html' %}
+
+{% block title %}Delete Quote - Startup{% endblock %}
+
+{% block page_header %}
+<div class="container-fluid bg-primary py-5 bg-header">
+    <div class="row py-5">
+        <div class="col-12 pt-lg-5 mt-lg-5 text-center">
+            <h1 class="display-4 text-white">Delete Quote</h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5" style="max-width: 650px;">
+    <h2>Delete this quotation?</h2>
+    <p>{{ quote_request.service }} — Quotation #{{ quote_request.id }}</p>
+    <form method="post">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-dark">Yes, Delete</button>
+        <a href="{% url 'dashboard' %}" class="btn btn-outline-dark">Cancel</a>
+    </form>
+</div>
+{% endblock %}

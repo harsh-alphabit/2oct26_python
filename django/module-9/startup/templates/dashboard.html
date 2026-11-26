@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+
+{% block title %}Quotation Dashboard - Startup{% endblock %}
+
+{% block page_header %}
+<div class="container-fluid bg-primary py-5 bg-header">
+    <div class="row py-5">
+        <div class="col-12 pt-lg-5 mt-lg-5 text-center">
+            <h1 class="display-4 text-white">Quotation Dashboard</h1>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2>Welcome, {{ customer.first_name }}!</h2>
+    <p>Create a quotation and manage your saved bills here.</p>
+    <a href="{% url 'quote' %}" class="btn btn-dark mb-4">New Quotation</a>
+
+    <h3>My Quotations</h3>
+    {% if quotes %}
+        <div class="table-responsive">
+            <table class="table table-bordered align-middle">
+                <thead>
+                    <tr>
+                        <th>Service</th>
+                        <th>Date</th>
+                        <th>Total</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for quote in quotes %}
+                        <tr>
+                            <td>{{ quote.service }}</td>
+                            <td>{{ quote.created_at|date:'d M Y' }}</td>
+                            <td>{% if quote.features %}₹{{ quote.total_price }}{% else %}Not priced{% endif %}</td>
+                            <td>{{ quote.status }}</td>
+                            <td>
+                                <a href="{% url 'quote_bill' quote.id %}" class="btn btn-sm btn-primary mb-1">View Bill</a>
+                                {% if quote.features %}<a href="{% url 'edit_quote' quote.id %}" class="btn btn-sm btn-dark mb-1">Edit</a>{% endif %}
+                                <a href="{% url 'delete_quote' quote.id %}" class="btn btn-sm btn-outline-dark mb-1">Delete</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <p>You have not created a quotation yet.</p>
+    {% endif %}
+</div>
+{% endblock %}

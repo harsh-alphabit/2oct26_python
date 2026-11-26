@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+
+{% block title %}Choose a Service - Startup{% endblock %}
+
+{% block page_header %}
+<div class="container-fluid bg-primary py-5 bg-header">
+    <div class="row py-5"><div class="col-12 pt-lg-5 mt-lg-5 text-center"><h1 class="text-white">Choose a Service</h1></div></div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <h2>What do you need?</h2>
+    <p>Choose a service, then select the work you want. These are sample prices for practice.</p>
+    <div class="row g-4">
+        {% for slug, service in services.items %}
+        <div class="col-md-6 col-lg-4">
+            <div class="border rounded p-4 h-100">
+                <h3 class="h5">{{ service.name }}</h3>
+                <p>Select the features you need and get an instant quotation.</p>
+                <a href="{% url 'create_quote' slug %}" class="btn btn-primary">Choose {{ service.name }}</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

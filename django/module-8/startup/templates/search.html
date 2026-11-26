@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Search Services - Startup{% endblock %}
+
+<!-- Search has its own page heading inside the shared navbar layout. -->
+{% block page_header %}
+        <div class="container-fluid bg-primary py-5 bg-header" style="margin-bottom: 90px;">
+            <div class="row py-5">
+                <div class="col-12 pt-lg-5 mt-lg-5 text-center">
+                    <h1 class="display-4 text-white">Search Services</h1>
+                </div>
+            </div>
+        </div>
+{% endblock %}
+
+<!-- The search form and its results belong only to this page. -->
+{% block content %}
+    <div class="container py-5">
+        <a href="/" class="text-dark">Home</a>
+        <h1 class="my-4">Search services</h1>
+
+        <form method="get" action="{% url 'search' %}" class="input-group mb-4">
+            <input type="text" name="q" value="{{ q }}" class="form-control" placeholder="Type search keyword">
+            <button type="submit" class="btn btn-dark">Search</button>
+        </form>
+
+        {% if q %}
+            <p>You searched for: {{ q }}</p>
+            {% for service in results %}
+                <p>{{ service }}</p>
+            {% empty %}
+                <p>No matching service found.</p>
+            {% endfor %}
+        {% else %}
+            <p>Enter a service name to search.</p>
+        {% endif %}
+    </div>
+{% endblock %}
