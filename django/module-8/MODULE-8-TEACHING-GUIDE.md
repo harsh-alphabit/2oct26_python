@@ -204,11 +204,3 @@ The actual quotation ID may be different from `1`. In templates, `{% url 'quote_
 | `startup/templates/delete_quote.html` | Delete confirmation |
 | `startup/templates/base.html` | Shared page layout and navigation |
 
-## Quick questions to ask students
-
-- Why do we save `customer_id` in the session after login?
-- Why does the bill view check both `id` and `customer`?
-- Why do checkboxes use `getlist()` instead of `get()`?
-- Why does the view calculate the total instead of accepting a total from the form?
-- Why does an edited quotation return to Pending?
-- What is the difference between a website customer and a Django admin account?
