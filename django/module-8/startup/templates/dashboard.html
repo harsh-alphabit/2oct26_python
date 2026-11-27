@@ -37,6 +37,7 @@
                             <td>{{ quote.service }}</td>
                             <td>{{ quote.created_at|date:'d M Y' }}</td>
                             <td>{% if quote.features %}₹{{ quote.total_price }}{% else %}Not priced{% endif %}</td>
+                            {# Display the saved status; this template does not change it. #}
                             <td>{{ quote.status }}</td>
                             <td>
                                 <a href="{% url 'quote_bill' quote.id %}" class="btn btn-sm btn-primary mb-1">View Bill</a>

@@ -43,6 +43,20 @@ class QuoteRequest(models.Model):
         return f"{self.name} - {self.service}"
 
 
+class WebsitePhoto(models.Model):
+    # The first word is saved in the database; the second is shown in admin.
+    PLACE_CHOICES = [
+        ('about', 'About image'),
+        ('feature', 'Features image'),
+    ]
+    place = models.CharField(max_length=10, choices=PLACE_CHOICES)
+    # Django saves the file in media/website/ and its path in the database.
+    photo = models.ImageField(upload_to='website/')
+
+    def __str__(self):
+        return self.get_place_display()
+
+
 class Subscriber(models.Model):
     email = models.EmailField(unique=True)
 

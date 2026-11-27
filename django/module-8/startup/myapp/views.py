@@ -201,7 +201,9 @@ def edit_quote(request, id):
             quote_request.features = ','.join(selected)
             quote_request.total_price = total
             quote_request.message = message
-            quote_request.status = 'Pending'  # A changed quote needs a new admin review.
+            # If the customer edits a quote, the admin must review the new details again.
+            # Even an Approved or Rejected quote goes back to Pending when this edit is saved.
+            quote_request.status = 'Pending'
             # save() writes the changed quote details to the database.
             quote_request.save()
             # Open the bill URL with this quote's ID.
@@ -392,6 +394,7 @@ def dashboard(request):
         # redirect() tells the browser to open another URL; '/' means the home page.
         return redirect('login')
     # filter() selects this customer's quotes; order_by('-id') puts the highest IDs first.
+    # Fetch saved statuses too, so reloading the dashboard shows the admin's latest changes.
     quotes = QuoteRequest.objects.filter(customer=customer).order_by('-id')
     # render() loads the HTML template, fills it with any supplied data, and returns the page.
     return render(request, 'dashboard.html', {'customer': customer, 'quotes': quotes})

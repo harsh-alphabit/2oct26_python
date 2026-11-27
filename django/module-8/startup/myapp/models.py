@@ -15,6 +15,7 @@ class ContactForm(models.Model):
 
 
 class QuoteRequest(models.Model):
+    # Each pair is (value saved in the database, label shown in the admin dropdown).
     STATUS_CHOICES = [
         ('Pending', 'Pending'),
         ('Approved', 'Approved'),
@@ -37,6 +38,8 @@ class QuoteRequest(models.Model):
     features = models.CharField(max_length=200, blank=True)
     total_price = models.PositiveIntegerField(default=0)
     created_at = models.DateTimeField(default=timezone.now)
+    # choices gives the admin its dropdown options. New quotes start as Pending.
+    # The selected status is stored as text in this quote's database row.
     status = models.CharField(max_length=10, choices=STATUS_CHOICES, default='Pending')
 
     def __str__(self):

@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from .models import QuoteRequest, Customer
+from .models import QuoteRequest, Customer, WebsitePhoto
 from .forms import ContactUs, SubscriberForm
 from django.contrib import messages
 from django.contrib.auth import logout
@@ -38,12 +38,17 @@ SERVICES = {
 }
 
 def index(request):
-    # render() loads the HTML template, fills it with any supplied data, and returns the page.
-    return render(request, 'index.html')
+    # Get the newest admin upload for each image place, if there is one.
+    about_photo = WebsitePhoto.objects.filter(place='about').order_by('-id').first()
+    feature_photo = WebsitePhoto.objects.filter(place='feature').order_by('-id').first()
+    return render(request, 'index.html', {
+        'about_photo': about_photo, 'feature_photo': feature_photo,
+    })
 
 def about(request):
-    # render() loads the HTML template, fills it with any supplied data, and returns the page.
-    return render(request, 'about.html')
+    # first() returns the newest About photo, or None if none was uploaded.
+    about_photo = WebsitePhoto.objects.filter(place='about').order_by('-id').first()
+    return render(request, 'about.html', {'about_photo': about_photo})
 
 def contact(request):
     # ContactUs is our ModelForm class. Calling it without data makes an empty form.
@@ -63,8 +68,9 @@ def contact(request):
     return render(request, 'contact.html', {'form': contactusform})
 
 def feature(request):
-    # render() loads the HTML template, fills it with any supplied data, and returns the page.
-    return render(request, 'feature.html')
+    # Show the newest Features photo uploaded from admin.
+    feature_photo = WebsitePhoto.objects.filter(place='feature').order_by('-id').first()
+    return render(request, 'feature.html', {'feature_photo': feature_photo})
 
 def quote(request):
     # session.get() reads the saved ID. filter() finds matching rows; first() returns one or None.
@@ -386,14 +392,14 @@ def user_login(request):
 
 
 def dashboard(request):
-    # session.get() reads the saved ID. filter() finds matching rows; first() returns one or None.
+    # first() returns one customer or None if the saved session ID is missing.
     customer = Customer.objects.filter(id=request.session.get('customer_id')).first()
     if not customer:
-        # redirect() tells the browser to open another URL; '/' means the home page.
         return redirect('login')
-    # filter() selects this customer's quotes; order_by('-id') puts the highest IDs first.
+
+    # filter() gets only this customer's quotes.
+    # order_by('-id') shows the newest quote first.
     quotes = QuoteRequest.objects.filter(customer=customer).order_by('-id')
-    # render() loads the HTML template, fills it with any supplied data, and returns the page.
     return render(request, 'dashboard.html', {'customer': customer, 'quotes': quotes})
 
 

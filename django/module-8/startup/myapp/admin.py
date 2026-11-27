@@ -9,14 +9,23 @@ class ContactFormAdmin(admin.ModelAdmin):
     list_filter = ['created_at']
 
 
+# ModelAdmin configures Django's built-in list and edit pages for quotations.
 class QuoteRequestAdmin(admin.ModelAdmin):
+    # list_display chooses the columns shown in the quotation table.
     list_display = ['id', 'name', 'service', 'total_price', 'status', 'created_at']
     search_fields = ['name', 'email', 'service']
+    # These links filter the table; clicking a filter does not change any status.
     list_filter = ['status', 'service', 'created_at']
+    # Show an editable status dropdown in each row of the list page.
+    # Changing the dropdown alone does not save it: click the bottom Save button.
+    # Django admin validates the submitted choices and saves the changed model rows.
+    # We do not need a separate status-update function in views.py.
     list_editable = ['status']
     # Admin can review the saved bill, but only change its approval status.
     readonly_fields = ['customer', 'name', 'email', 'service', 'selected_work',
                        'total_price', 'message', 'created_at']
+    # Opening a quote by its ID also shows status on the detail form.
+    # It is editable because status is not in readonly_fields above.
     fields = ['customer', 'name', 'email', 'service', 'selected_work',
               'total_price', 'message', 'created_at', 'status']
 
@@ -47,6 +56,7 @@ class CustomerAdmin(admin.ModelAdmin):
 
 
 admin.site.register(ContactForm, ContactFormAdmin)
+# Connect the QuoteRequest model to the admin settings defined above.
 admin.site.register(QuoteRequest, QuoteRequestAdmin)
 admin.site.register(Subscriber)
 admin.site.register(Customer, CustomerAdmin)

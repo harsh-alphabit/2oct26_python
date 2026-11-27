@@ -122,7 +122,7 @@
                 </div>
                 <div class="col-lg-5" style="min-height: 500px;">
                     <div class="position-relative h-100">
-                        <img class="position-absolute w-100 h-100 rounded wow zoomIn" data-wow-delay="0.9s" src="/static/img/about.jpg" style="object-fit: cover;">
+                        <img class="position-absolute w-100 h-100 rounded wow zoomIn" data-wow-delay="0.9s" {% if about_photo %}src="{{ about_photo.photo.url }}"{% else %}src="/static/img/about.jpg"{% endif %} style="object-fit: cover;">
                     </div>
                 </div>
             </div>
@@ -159,7 +159,7 @@
                 </div>
                 <div class="col-lg-4  wow zoomIn" data-wow-delay="0.9s" style="min-height: 350px;">
                     <div class="position-relative h-100">
-                        <img class="position-absolute w-100 h-100 rounded wow zoomIn" data-wow-delay="0.1s" src="/static/img/feature.jpg" style="object-fit: cover;">
+                        <img class="position-absolute w-100 h-100 rounded wow zoomIn" data-wow-delay="0.1s" {% if feature_photo %}src="{{ feature_photo.photo.url }}"{% else %}src="/static/img/feature.jpg"{% endif %} style="object-fit: cover;">
                     </div>
                 </div>
                 <div class="col-lg-4">

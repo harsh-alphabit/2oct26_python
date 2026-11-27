@@ -20,6 +20,7 @@
         <h2>Startup Quotation #{{ quote_request.id }}</h2>
         <p>Date: {{ quote_request.created_at|date:'d M Y' }}</p>
         <p>Customer: {{ quote_request.name }}<br>Email: {{ quote_request.email }}<br>Service: {{ quote_request.service }}</p>
+        {# Show the status fetched from the database when this bill page was requested. #}
         <p><strong>Status:</strong> {{ quote_request.status }}</p>
         {% if items %}
         <div class="table-responsive">
