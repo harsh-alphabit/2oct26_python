@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>student data</title>
+</head>
+
+<body bgcolor="lightblue">
+    <h1>student data</h1>
+    <hr>
+    <!-- {{data}} -->
+    <!-- html is scripting lang -->
+
+    <!-- {% for i in data %}
+    {{i.name}}
+    {{i.email}}
+    {{i.mobile}}
+    {{i.address}}
+    {% endfor %} -->
+
+    <table border="1" cellpadding="10" cellspacing="0" align="center">
+        <tr>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Mobile</th>
+            <th>Address</th>
+            <th>Update</th>
+            <th>Delete</th>
+        </tr>
+
+        {% for i in data %}
+        <tr>
+            <td>{{i.name}}</td>
+            <td>{{i.email}}</td>
+            <td>{{i.mobile}}</td>
+            <td>{{i.address}}</td>
+            <td><a href="{% url 'update' i.id %}">Edit</a></td>
+            <td><a href="{% url 'delete' i.id %}">Delete</a></td>
+        </tr>
+        {% endfor %}
+    </table> 
+
+    <hr>
+    <a href="{% url 'index' %}">back to home</a>
+</body>
+
+</html>

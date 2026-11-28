@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>index signup page</title>
+</head>
+
+<body bgcolor="lightblue">
+    <h1>Signup Form</h1>
+    <hr>
+    {% if form.errors %}<p>Please check the details below: {{ form.errors }}</p>{% endif %}
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="Name" value="{{ form.name.value|default_if_none:'' }}"><br><br>
+        <input type="email" name="email" placeholder="Email" value="{{ form.email.value|default_if_none:'' }}"><br><br>
+        <input type="password" name="password" placeholder="Password"><br><br>
+        <input type="number" name="mobile" placeholder="Mobile" value="{{ form.mobile.value|default_if_none:'' }}"><br><br>
+        <textarea name="address" placeholder="Address">{{ form.address.value|default_if_none:'' }}</textarea><br><br>
+        <input type="submit" value="Signup">
+    </form>
+
+    <hr>
+    <a href="{% url 'dbdata' %}">View Data</a>
+</body>
+
+</html>

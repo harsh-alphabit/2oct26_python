@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Update Student</title>
+</head>
+
+<body bgcolor="lightblue">
+    <h1>Update Form</h1>
+    <hr>
+    {% if form.errors %}<p>Please check the details below: {{ form.errors }}</p>{% endif %}
+    <form method="POST">
+        {% csrf_token %}
+        <input type="text" name="name" placeholder="Name" value="{{ form.name.value }}"><br><br>
+        <input type="email" name="email" placeholder="Email" value="{{ form.email.value }}"><br><br>
+        <input type="password" name="password" placeholder="Leave blank to keep current password"><br><br>
+        <input type="number" name="mobile" placeholder="Mobile" value="{{ form.mobile.value }}"><br><br>
+        <textarea name="address" placeholder="Address">{{ form.address.value|default_if_none:'' }}</textarea><br><br>
+        <input type="submit" value="Update">
+        <a href="{% url 'dbdata' %}">Cancel</a>
+    </form>
+</body>
+
+</html>
